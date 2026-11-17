@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Abasha CR · Vendedor</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#05070C">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070C;--bg2:#0A0D14;--bg3:#10141D;--bg4:#161B27;
+  --blue:#00BFFF;--red:#E8192C;--gold:#C8A84B;--green:#00E676;--purple:#A855F7;--orange:#F97316;
+  --white:#EEF2FF;--dim:rgba(238,242,255,.65);--dim2:rgba(238,242,255,.3);--dim3:rgba(238,242,255,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:84px;}
+::-webkit-scrollbar{width:2px;}::-webkit-scrollbar-thumb{background:var(--blue);}
+
+/* WHO SCREEN */
+#who-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;padding:24px;
+  background-image:radial-gradient(ellipse at 50% 0%,rgba(0,191,255,.08) 0%,transparent 70%);}
+.who-box{width:100%;max-width:340px;}
+.who-logo{font-family:'Bebas Neue';font-size:44px;letter-spacing:.1em;text-align:center;margin-bottom:2px;
+  background:linear-gradient(180deg,var(--white),var(--dim2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.who-logo span{-webkit-text-fill-color:var(--red);}
+.who-sub{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;color:var(--dim2);text-align:center;margin-bottom:32px;}
+.who-card{background:var(--bg2);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:26px;}
+.who-label{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:8px;display:block;}
+.who-select{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--white);font-family:'Exo 2';font-size:15px;padding:13px 14px;outline:none;margin-bottom:16px;transition:border .2s;}
+.who-select:focus{border-color:rgba(0,191,255,.4);}
+.who-btn{width:100%;font-family:'Rajdhani';font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:14px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--blue),rgba(0,191,255,.7));color:#000;box-shadow:0 4px 24px rgba(0,191,255,.3);}
+.who-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;min-height:18px;}
+
+/* TOPBAR */
+.topbar{background:rgba(5,7,12,.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.05);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tlogo{font-family:'Bebas Neue';font-size:17px;letter-spacing:.1em;}
+.tlogo span{color:var(--red);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--gold);transition:background .4s;}
+.tuser{font-family:'Rajdhani';font-size:11px;font-weight:700;color:var(--blue);}
+.cambiar-btn{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--dim2);background:transparent;border:none;cursor:pointer;padding:2px 6px;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(5,7,12,.98);backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,.06);display:flex;z-index:100;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 14px;cursor:pointer;border:none;background:transparent;transition:all .2s;}
+.bni-icon{font-size:19px;margin-bottom:3px;transition:transform .2s;}
+.bni-lbl{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);transition:color .2s;}
+.bni.active .bni-lbl{color:var(--blue);}
+.bni.active .bni-icon{transform:translateY(-3px);}
+
+/* PAGES */
+.page{display:none;padding:14px 14px 6px;}
+.page.active{display:block;}
+
+/* NIVEL BADGE */
+.nivel-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Rajdhani';font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid;}
+
+/* HERO — DASHBOARD */
+.hero{border-radius:20px;padding:20px 18px 18px;margin-bottom:12px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
+  border:1px solid rgba(255,255,255,.06);}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,191,255,.08),transparent 70%);}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.hero-name{font-family:'Bebas Neue';font-size:22px;letter-spacing:.05em;color:var(--white);}
+.hero-sal-lbl{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.hero-sal{font-family:'Bebas Neue';font-size:40px;line-height:1;letter-spacing:.02em;}
+.hero-sal .proyectado{font-size:14px;color:var(--dim2);font-family:'Exo 2';font-weight:400;margin-left:4px;}
+
+/* FRASE MOTIVACIONAL */
+.frase{font-size:13px;color:var(--dim);font-style:italic;margin:6px 0 14px;line-height:1.4;min-height:20px;transition:opacity .4s;}
+
+/* PROGRESS RING — XP visual */
+.xp-ring-wrap{display:flex;flex-direction:column;align-items:center;}
+.xp-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
+.xp-ring svg{transform:rotate(-90deg);}
+.xp-ring-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:6;}
+.xp-ring-fill{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.xp-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.xp-pct{font-family:'Bebas Neue';font-size:17px;line-height:1;}
+.xp-sub{font-size:8px;font-family:'Rajdhani';font-weight:700;letter-spacing:.1em;color:var(--dim2);}
+
+/* BARRA SEMANAL */
+.week-prog{margin-bottom:4px;}
+.week-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.week-title{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);}
+.week-count{font-family:'Bebas Neue';font-size:20px;}
+.prog-track{height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;position:relative;}
+.prog-fill{height:100%;border-radius:5px;transition:width 1s ease;position:relative;}
+.prog-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shine 2s infinite;}
+@keyframes shine{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.prog-markers{display:flex;justify-content:space-between;margin-top:4px;}
+.prog-marker{font-family:'Rajdhani';font-size:9px;font-weight:700;color:var(--dim2);}
+
+/* GRID STATS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:12px;}
+.sc{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:13px;padding:13px 14px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.blue::before{background:var(--blue);}.sc.green::before{background:var(--green);}
+.sc.gold::before{background:var(--gold);}.sc.red::before{background:var(--red);}
+.sc.purple::before{background:var(--purple);}
+.sc-lbl{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.sc-val{font-family:'Bebas Neue';font-size:26px;line-height:1;}
+.sc-val.blue{color:var(--blue);}.sc-val.green{color:var(--green);}
+.sc-val.gold{color:var(--gold);}.sc-val.red{color:var(--red);}
+.sc-val.purple{color:var(--purple);}
+.sc-sub{font-size:10px;color:var(--dim2);margin-top:2px;}
+
+/* DÍAS DE LA SEMANA */
+.dias-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.dia-col{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.dia-lbl{font-family:'Rajdhani';font-size:8px;font-weight:700;color:var(--dim2);}
+.dia-bar{width:100%;border-radius:3px;background:rgba(255,255,255,.05);min-height:4px;transition:height .4s;}
+.dia-num{font-family:'Rajdhani';font-size:9px;font-weight:700;color:var(--dim2);}
+.dia-num.hoy{color:var(--blue);}
+.dia-col.hoy .dia-bar{box-shadow:0 0 6px rgba(0,191,255,.4);}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:15px;padding:16px 18px;margin-bottom:11px;}
+.ct{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+.dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.dot.b{background:var(--blue);}.dot.r{background:var(--red);}.dot.g{background:var(--gold);}
+.dot.gr{background:var(--green);}.dot.p{background:var(--purple);}
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);margin:11px 0;}
+.prow{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.prow:last-child{border-bottom:none;}
+.prow .lbl{color:var(--dim2);}
+
+/* NIVEL LADDER */
+.nivel-ladder{display:flex;flex-direction:column;gap:8px;}
+.nivel-item{border-radius:11px;padding:12px 14px;border:1px solid;display:flex;align-items:center;gap:12px;transition:all .3s;}
+.nivel-item.done{opacity:.5;}
+.nivel-item.current{box-shadow:0 0 20px rgba(0,191,255,.15);}
+.nivel-item.locked{opacity:.3;filter:grayscale(.8);}
+.nivel-emoji{font-size:22px;flex-shrink:0;}
+.nivel-info{flex:1;}
+.nivel-name{font-family:'Bebas Neue';font-size:16px;letter-spacing:.05em;}
+.nivel-range{font-size:11px;color:var(--dim2);}
+.nivel-pago{font-family:'Bebas Neue';font-size:18px;}
+.nivel-check{font-size:16px;}
+
+/* LOGROS */
+.logros-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.logro{border-radius:12px;padding:13px;border:1px solid;text-align:center;transition:all .3s;}
+.logro.done{animation:logro-pulse 3s ease infinite;}
+.logro.locked{opacity:.3;filter:grayscale(1);}
+@keyframes logro-pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,168,75,.0);}50%{box-shadow:0 0 12px rgba(200,168,75,.2);}}
+.logro-icon{font-size:24px;margin-bottom:6px;}
+.logro-name{font-family:'Rajdhani';font-size:11px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.logro-desc{font-size:10px;color:var(--dim2);}
+.logro-prog{font-size:10px;margin-top:4px;}
+
+/* RANKING */
+.ri{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.ri:last-child{border-bottom:none;}
+.ri-num{font-family:'Bebas Neue';font-size:20px;width:26px;flex-shrink:0;}
+.ri-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:14px;flex-shrink:0;}
+.ri-info{flex:1;}
+.ri-name{font-size:13px;font-weight:500;}
+.ri-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:4px;}
+.ri-bar-fill{height:100%;border-radius:2px;transition:width .8s;}
+.ri-val{font-family:'Rajdhani';font-size:13px;font-weight:700;white-space:nowrap;text-align:right;}
+.ri-sal{font-size:10px;color:var(--dim2);text-align:right;}
+
+/* REGISTRO VENTA */
+.precio-btn{border-radius:12px;border:1px solid rgba(255,255,255,.08);background:var(--bg3);padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.precio-btn:active{transform:scale(.97);}
+.precio-btn.selected{border-color:var(--blue);background:rgba(0,191,255,.08);box-shadow:0 0 16px rgba(0,191,255,.15);}
+.precio-btn .pb-emoji{font-size:24px;margin-bottom:5px;}
+.precio-btn .pb-title{font-family:'Rajdhani';font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);margin-bottom:3px;}
+.precio-btn .pb-price{font-family:'Bebas Neue';font-size:22px;}
+.precio-btn .pb-sub{font-size:10px;color:var(--dim2);margin-top:2px;}
+.precio-btn .pb-margin{font-size:11px;font-weight:600;margin-top:4px;}
+.qty-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin:16px 0;}
+.qty-btn{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:var(--bg3);color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.qty-btn:active{transform:scale(.92);background:rgba(0,191,255,.1);}
+.qty-num{font-family:'Bebas Neue';font-size:42px;color:var(--white);min-width:60px;text-align:center;}
+.confirm-btn{width:100%;font-family:'Rajdhani';font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:16px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--blue),rgba(0,191,255,.7));color:#000;font-size:14px;box-shadow:0 4px 24px rgba(0,191,255,.3);transition:all .2s;}
+.confirm-btn:active{transform:scale(.98);}
+.confirm-btn:disabled{opacity:.4;cursor:not-allowed;}
+.venta-preview{background:var(--bg3);border:1px solid rgba(0,191,255,.15);border-radius:10px;padding:13px;margin:12px 0;}
+.venta-preview-title{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:9px;}
+
+/* FINANZAS */
+.fin-hero{background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(200,168,75,.02));border:1px solid rgba(200,168,75,.15);border-radius:16px;padding:18px;margin-bottom:12px;}
+.fin-sal{font-family:'Bebas Neue';font-size:36px;color:var(--gold);}
+.fin-lbl{font-size:12px;color:var(--dim2);margin-bottom:12px;}
+.fin-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+.fin-b{background:var(--bg3);border-radius:9px;padding:11px;text-align:center;}
+.fin-b-icon{font-size:17px;margin-bottom:3px;}
+.fin-b-lbl{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--dim2);margin-bottom:3px;}
+.fin-b-val{font-family:'Bebas Neue';font-size:16px;}
+.meta-fin{background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px;}
+.meta-fin-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:13px;}
+.meta-fin-pct{font-family:'Rajdhani';font-size:11px;font-weight:700;color:var(--gold);}
+.meta-fin-sub{font-size:11px;color:var(--dim2);margin-top:4px;}
+
+/* BUTTONS */
+.btn-primary{font-family:'Rajdhani';font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:12px 18px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--blue),rgba(0,191,255,.6));color:#000;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost{font-family:'Rajdhani';font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:10px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--dim);cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:rgba(255,255,255,.25);color:var(--white);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:20px 20px 0 0;padding:24px 18px 38px;width:100%;max-width:480px;position:relative;max-height:88vh;overflow-y:auto;}
+.modal-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--dim2);font-size:18px;cursor:pointer;padding:4px;}
+.modal-title{font-family:'Bebas Neue';font-size:24px;letter-spacing:.05em;margin-bottom:2px;}
+.modal-sub{font-size:12px;color:var(--dim2);margin-bottom:18px;}
+.finput{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--white);font-family:'Exo 2';font-size:15px;padding:12px 13px;outline:none;margin-bottom:12px;transition:border .2s;}
+.finput:focus{border-color:rgba(0,191,255,.4);}
+.flabel{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-bottom:5px;display:block;}
+
+/* CELEBRACIÓN */
+.celebracion{display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);}
+.celebracion.show{display:flex;}
+.cel-box{text-align:center;animation:celanim .5s ease;}
+@keyframes celanim{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+.cel-emoji{font-size:80px;margin-bottom:12px;animation:spin 1s ease;}
+@keyframes spin{from{transform:rotate(-20deg) scale(.8);}to{transform:rotate(0deg) scale(1);}}
+.cel-title{font-family:'Bebas Neue';font-size:36px;letter-spacing:.05em;margin-bottom:8px;}
+.cel-sub{font-size:15px;color:var(--dim);margin-bottom:24px;}
+.cel-btn{font-family:'Rajdhani';font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;background:var(--white);color:var(--bg);}
+
+/* ALERT */
+.alert{padding:10px 13px;border-radius:9px;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.alert.info{background:rgba(0,191,255,.06);border:1px solid rgba(0,191,255,.14);color:var(--blue);}
+.alert.warn{background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);color:var(--orange);}
+.alert.success{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.18);color:var(--green);}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;right:14px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.ti{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 14px;font-size:13px;max-width:260px;animation:tin .3s ease;}
+.ti.success{border-color:rgba(0,230,118,.3);color:var(--green);}
+.ti.info{border-color:rgba(0,191,255,.3);color:var(--blue);}
+.ti.error{border-color:rgba(232,25,44,.3);color:var(--red);}
+@keyframes tin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+</style>
+<link rel="manifest" href="manifest-vendedor.json">
+<link rel="icon" type="image/png" href="vendedor-192.png">
+<link rel="apple-touch-icon" href="vendedor-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+<!-- WHO SCREEN -->
+<div id="who-screen">
+  <div class="who-box">
+    <div class="who-logo">ABASHA <span>CR</span></div>
+    <div class="who-sub">App del Vendedor</div>
+    <div class="who-card">
+      <label class="who-label">¿Quién eres?</label>
+      <select id="who-sel" class="who-select">
+        <option value="">Cargando vendedores...</option>
+      </select>
+      <button class="who-btn" onclick="selectWho()">Entrar →</button>
+      <div class="who-err" id="who-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tlogo">ABASHA <span>CR</span></div>
+  <div class="topbar-right">
+    <div class="sdot" id="sdot"></div>
+    <span class="tuser" id="tuser">VENDEDOR</span>
+    <button class="cambiar-btn" onclick="cambiarVendedor()">cambiar</button>
+  </div>
+</div>
+
+<!-- PÁGINA: INICIO / DASHBOARD -->
+<div id="p-inicio" class="page active">
+  <div id="hero-box" class="hero"></div>
+  <div class="g2" id="stats-grid"></div>
+  <div class="card">
+    <div class="ct"><div class="dot b"></div>Esta semana — día a día</div>
+    <div class="dias-grid" id="dias-grid"></div>
+    <div class="ct" style="margin-top:4px;margin-bottom:0;"><div class="dot gr"></div>Mínimo diario: 10 unidades</div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="dot p"></div>Ranking del equipo</div>
+    <div id="rank-mini"></div>
+  </div>
+</div>
+
+<!-- PÁGINA: REGISTRAR VENTA -->
+<div id="p-vender" class="page">
+  <div style="font-family:'Bebas Neue';font-size:26px;letter-spacing:.05em;margin-bottom:2px;">Registrar <span style="color:var(--blue)">Venta</span></div>
+  <div style="font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px;">¿Cómo la vendiste?</div>
+  
+  <div class="g2" style="margin-bottom:16px;" id="precio-btns"></div>
+  
+  <div class="card">
+    <div class="ct"><div class="dot b"></div>¿Cuántas vendiste así?</div>
+    <div class="qty-ctrl">
+      <button class="qty-btn" onclick="cambiarQty(-1)">−</button>
+      <div class="qty-num" id="qty-display">1</div>
+      <button class="qty-btn" onclick="cambiarQty(1)">+</button>
+    </div>
+    <div id="venta-preview"></div>
+    <button class="confirm-btn" id="confirm-venta-btn" onclick="confirmarVenta()">Confirmar Venta</button>
+  </div>
+
+  <div class="card">
+    <div class="ct"><div class="dot gr"></div>Mis ventas de hoy</div>
+    <div id="ventas-hoy"></div>
+  </div>
+</div>
+
+<!-- PÁGINA: MI PROGRESO -->
+<div id="p-progreso" class="page">
+  <div style="font-family:'Bebas Neue';font-size:26px;letter-spacing:.05em;margin-bottom:2px;">Mi <span style="color:var(--purple)">Progreso</span></div>
+  <div style="font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px;">Niveles · Logros · Racha</div>
+  
+  <div class="card">
+    <div class="ct"><div class="dot p"></div>Escalera de niveles</div>
+    <div id="nivel-ladder"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct"><div class="dot g"></div>Logros desbloqueables</div>
+    <div class="logros-grid" id="logros-grid"></div>
+  </div>
+</div>
+
+<!-- PÁGINA: METAS FINANCIERAS -->
+<div id="p-metas" class="page">
+  <div style="font-family:'Bebas Neue';font-size:26px;letter-spacing:.05em;margin-bottom:2px;">Mis <span style="color:var(--gold)">Metas</span></div>
+  <div style="font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px;">Si ahorras tanto · si vendés tanto · ganás esto</div>
+
+  <div class="fin-hero" id="fin-hero"></div>
+
+  <div class="card">
+    <div class="ct"><div class="dot g"></div>Si vendés más, ganás más</div>
+    <div id="fin-tabla"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct"><div class="dot b"></div>Mis metas personales</div>
+    <div id="fin-metas-list"></div>
+    <div style="margin-top:10px;">
+      <button class="btn-ghost" onclick="openM('m-meta')">+ Nueva meta</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct"><div class="dot gr"></div>Regla del 70-20-10</div>
+    <div id="fin-regla"></div>
+    <div class="alert info" style="margin-top:10px;"><span>💡</span>70% para vivir · 20% para ahorrar · 10% para crecer</div>
+  </div>
+</div>
+
+<!-- PÁGINA: RANKING -->
+<div id="p-ranking" class="page">
+  <div style="font-family:'Bebas Neue';font-size:26px;letter-spacing:.05em;margin-bottom:2px;">Ranking <span style="color:var(--red)">Equipo</span></div>
+  <div style="font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px;">Semana actual · ¿Dónde estás vos?</div>
+  <div class="alert info"><span>🏆</span>El top vendedor de la semana recibe reconocimiento especial de Abasha</div>
+  <div class="card" id="rank-full"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bni active" onclick="showP('inicio',this)"><div class="bni-icon">🏠</div><div class="bni-lbl">Inicio</div></button>
+  <button class="bni" onclick="showP('vender',this)"><div class="bni-icon">💵</div><div class="bni-lbl">Vender</div></button>
+  <button class="bni" onclick="showP('progreso',this)"><div class="bni-icon">⚡</div><div class="bni-lbl">Progreso</div></button>
+  <button class="bni" onclick="showP('metas',this)"><div class="bni-icon">🎯</div><div class="bni-lbl">Metas</div></button>
+  <button class="bni" onclick="showP('ranking',this)"><div class="bni-icon">🏆</div><div class="bni-lbl">Ranking</div></button>
+</nav>
+
+<!-- MODAL META -->
+<div class="modal-bg" id="m-meta">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('m-meta')">✕</button>
+    <div class="modal-title">Nueva <span style="color:var(--gold)">Meta</span></div>
+    <div class="modal-sub">¿Qué querés lograr con tu plata?</div>
+    <label class="flabel">¿Qué es?</label>
+    <input class="finput" type="text" id="mt-name" placeholder="Ej: Comprar una moto">
+    <label class="flabel">¿Cuánto cuesta? (₡)</label>
+    <input class="finput" type="number" id="mt-total" placeholder="500000">
+    <label class="flabel">¿Cuánto tenés ahorrado ya? (₡)</label>
+    <input class="finput" type="number" id="mt-ahorro" placeholder="0">
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="addMeta()">Guardar Meta</button>
+  </div>
+</div>
+
+<!-- CELEBRACIÓN -->
+<div class="celebracion" id="cel-box">
+  <div class="cel-box">
+    <div class="cel-emoji" id="cel-emoji">🎉</div>
+    <div class="cel-title" id="cel-title">¡INCREÍBLE!</div>
+    <div class="cel-sub" id="cel-sub">Lograste algo grande.</div>
+    <button class="cel-btn" onclick="closeCel()">Seguir vendiendo →</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const SBU='https://jabyzohcabmabgvctarq.supabase.co', SBK='sb_publishable_OnSKgU_VU8leCmpz9NWWQg_TPJW882u';
+const SBH={'apikey':SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json'};
+
+const NIVELES=[{"min":0,"max":59,"nombre":"En camino","emoji":"🚀","color":"#00BFFF","pago":null},{"min":60,"max":179,"nombre":"Meta 60","emoji":"🎯","color":"#C8A84B","pago":100000},{"min":180,"max":9999,"nombre":"Diamond","emoji":"💎","color":"#00E676","pago":250000}];
+const FRASES={"inicio": ["Vende. Mejora. Sube de nivel.", "Cada venta te acerca más.", "El que no vende, no cobra. Vos sí podés."], "bajo": ["Calentando motores. ¡Arrancá fuerte!", "El día apenas empieza.", "10 productos hoy. ¿Podés con eso?"], "medio": ["¡Vas bien! Seguí así.", "No aflojes ahora.", "Cada venta vale. ¡Sumale una más!"], "cerca": ["Ya casi. No pares.", "Estás a poco del siguiente nivel.", "¡Una más y te acercás!"], "meta": ["¡META ALCANZADA! 🔥", "Lo conseguiste. Ahora vamos por más.", "¡Subiste de nivel! 🚀"], "record": ["¿NUEVO RÉCORD? ¡Dale que podés!", "Estás superando tu mejor semana.", "¡NUEVO RÉCORD! 🏆"], "diamond": ["💎 ERES DIAMOND. La élite de la élite.", "180 productos. Eso no lo logra cualquiera.", "Nivel máximo desbloqueado. 💎"]};
+
+const PRECIOS=[
+  {id:'suelto6',emoji:'💰',title:'Suelto',price:6000,units:1,margin:2500,color:'var(--blue)',sub:'1 producto a ₡6,000',marginLbl:'Cuenta 1 unidad'},
+  {id:'promo2', emoji:'🔥',title:'Combo x2',price:10000,units:2,margin:3000,color:'var(--orange)',sub:'2 productos a ₡10,000',marginLbl:'Cuenta 2 unidades'},
+  {id:'suelto5',emoji:'🤝',title:'Precio amigo',price:5000,units:1,margin:1500,color:'var(--purple)',sub:'1 producto a ₡5,000',marginLbl:'Cuenta 1 unidad'},
+];
+const DIAS_SEM=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const LOGROS_DEF=[
+  {id:'l1',icon:'⭐',name:'Primera venta',desc:'Vendiste tu primera unidad',req:1,tipo:'total'},
+  {id:'l2',icon:'🔥',name:'10 en un día',desc:'Superaste el mínimo diario',req:10,tipo:'dia'},
+  {id:'l3',icon:'🎯',name:'Primera meta',desc:'Llegaste a 60 unidades en la semana',req:60,tipo:'semana'},
+  {id:'l4',icon:'⚡',name:'Combo master',desc:'Vendiste 5 combos x2 en un día',req:5,tipo:'combos'},
+  {id:'l5',icon:'💯',name:'Centenario',desc:'100 unidades en total histórico',req:100,tipo:'total_hist'},
+  {id:'l6',icon:'👑',name:'Récord personal',desc:'Superaste tu mejor semana anterior',req:1,tipo:'record'},
+  {id:'l7',icon:'💎',name:'Diamond',desc:'180 unidades en una semana',req:180,tipo:'semana'},
+  {id:'l8',icon:'🏦',name:'Ahorrador',desc:'Creaste tu primera meta financiera',req:1,tipo:'metas'},
+];
+
+let S=null, LOCAL=null, myEmpId=null, selPrecio=null, qty=1;
+const LKEY='ab_emp_v3';
+function loadL(){try{return JSON.parse(localStorage.getItem(LKEY))||{metas:[],ventasLocales:[]};}catch(e){return{metas:[],ventasLocales:[]};}}
+function saveL(d){localStorage.setItem(LKEY,JSON.stringify(d));}
+
+/* SYNC */
+function setSS(st){const d=document.getElementById('sdot');if(!d)return;const c={ok:'var(--green)',syncing:'var(--gold)',offline:'var(--red)'};d.style.background=c[st]||c.offline;}
+async function getCloud(){
+  try{const r=await fetch(SBU+'/rest/v1/sistema?id=eq.main',{headers:SBH});if(r.ok){const d=await r.json();if(d&&d.length>0&&d[0].data)return d[0].data;}  }catch(e){}return null;
+}
+async function saveCloud(){
+  setSS('syncing');
+  try{await fetch(SBU+'/rest/v1/sistema',{method:'POST',headers:Object.assign({},SBH,{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{id:'main',data:S,updated_at:new Date().toISOString()}])});setSS('ok');}
+  catch(e){setSS('offline');}
+}
+
+/* WHO */
+function populateWho(){
+  const sel=document.getElementById('who-sel');if(!sel)return;
+  const emps=getEmps();
+  if(!emps.length){sel.innerHTML='<option value="">No hay vendedores creados aún</option>';return;}
+  sel.innerHTML='<option value="">Seleccioná tu nombre...</option>'+emps.map(e=>'<option value="'+e.id+'">'+e.name+'</option>').join('');
+  const saved=localStorage.getItem('ab_my_id');
+  if(saved)sel.value=saved;
+}
+function selectWho(){
+  const v=document.getElementById('who-sel').value;
+  if(!v){document.getElementById('who-err').textContent='Seleccioná tu nombre.';return;}
+  localStorage.setItem('ab_my_id',v);myEmpId=v;
+  const emp=getMyEmp();
+  document.getElementById('who-screen').style.display='none';
+  document.getElementById('tuser').textContent=emp?emp.name.split(' ')[0].toUpperCase():'VEND';
+  renderAll();
+}
+function cambiarVendedor(){document.getElementById('who-screen').style.display='flex';populateWho();}
+
+/* MY EMP */
+function getEmps(){return((S&&S.empleados)||[]).filter(function(e){return e.name!=='Osman';});}
+function getMyEmp(){
+  const id=myEmpId||localStorage.getItem('ab_my_id');
+  if(!id)return getEmps()[0]||null;
+  return getEmps().find(e=>String(e.id)===String(id))||getEmps()[0]||null;
+}
+function getTotalHist(){
+  const e=getMyEmp();if(!e)return 0;
+  const ant=(S&&S.semanas||[]).reduce((a,sem)=>{const m=(sem.empleados||[]).find(x=>x.name===e.name);return a+(m?m.vendido||0:0);},0);
+  return (e.vendidoSemana||0)+ant;
+}
+function getVentasHoy(){
+  return(LOCAL&&LOCAL.ventasLocales||[]).filter(v=>v.fecha&&v.fecha.startsWith(new Date().toLocaleDateString('es-CR')));
+}
+
+/* NIVEL */
+function getNivel(v){
+  for(let i=NIVELES.length-1;i>=0;i--){if(v>=NIVELES[i].min)return NIVELES[i];}
+  return NIVELES[0];
+}
+function getSiguienteNivel(v){
+  for(let i=0;i<NIVELES.length;i++){if(v<NIVELES[i].min)return NIVELES[i];}
+  return null;
+}
+
+/* SALARIO */
+function calcSal(v){
+  if(v>=180)return 250000;
+  if(v>=60)return 100000;
+  return 0;
+}
+
+/* FRASE */
+function getFrase(v,sem){
+  if(sem>=180)return FRASES.diamond[Math.floor(Math.random()*FRASES.diamond.length)];
+  const niv=getNivel(v);const sig=getSiguienteNivel(v);
+  if(sig&&(sig.min-v)<=5)return FRASES.cerca[Math.floor(Math.random()*FRASES.cerca.length)].replace('X',sig.min-v);
+  if(v>=sem*0.8&&sem>0)return FRASES.record[Math.floor(Math.random()*FRASES.record.length)];
+  if(v===0)return FRASES.inicio[Math.floor(Math.random()*FRASES.inicio.length)];
+  if(v<10)return FRASES.bajo[Math.floor(Math.random()*FRASES.bajo.length)];
+  return FRASES.medio[Math.floor(Math.random()*FRASES.medio.length)];
+}
+
+/* UTILS */
+function fmt(n){return '₡'+Math.round(n).toLocaleString('es-CR');}
+function toast(msg,type){const d=document.createElement('div');d.className='ti '+(type||'success');d.textContent=msg;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3500);}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function showP(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  renderAll();
+}
+function showCel(emoji,title,sub){
+  document.getElementById('cel-emoji').textContent=emoji;
+  document.getElementById('cel-title').textContent=title;
+  document.getElementById('cel-sub').textContent=sub;
+  document.getElementById('cel-box').classList.add('show');
+}
+function closeCel(){document.getElementById('cel-box').classList.remove('show');}
+
+/* RENDER INICIO */
+function renderInicio(){
+  const e=getMyEmp();
+  const v=e?e.vendidoSemana||0:0;
+  const sal=calcSal(v);
+  const niv=getNivel(v);
+  const sig=getSiguienteNivel(v);
+  const faltaSig=sig?sig.min-v:0;
+  const progSig=sig?Math.min(100,Math.round(((v-niv.min)/(sig.min-niv.min))*100)):100;
+  const record=e?e.recordSemana||0:0;
+
+  const hero=document.getElementById('hero-box');
+  if(hero)hero.innerHTML=`
+    <div class="hero-top">
+      <div>
+        <div style="font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:2px;">Buen día,</div>
+        <div class="hero-name">${e?e.name.split(' ')[0]:'Vendedor'}</div>
+      </div>
+      <div class="nivel-badge" style="color:${niv.color};border-color:${niv.color}30;background:${niv.color}10;">
+        ${niv.emoji} ${niv.nombre}
+      </div>
+    </div>
+    <div class="frase" id="frase-txt">${getFrase(v,record)}</div>
+    <div class="hero-sal-lbl">salario proyectado esta semana</div>
+    <div class="hero-sal" style="color:${niv.color}">${fmt(sal)}<span class="proyectado">proyectado</span></div>
+    <div style="height:14px;"></div>
+    <div class="week-prog">
+      <div class="week-header">
+        <div class="week-title">${sig?'Próxima meta: '+sig.nombre+' en '+faltaSig+' unidades':'¡Meta máxima alcanzada!'}</div>
+        <div class="week-count" style="color:${niv.color}">${v}<span style="font-size:14px;color:var(--dim2);">/180</span></div>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" style="width:${Math.min(100,Math.round(v/180*100))}%;background:linear-gradient(90deg,${niv.color},${sig?sig.color:niv.color})"></div>
+      </div>
+      <div class="prog-markers" style="position:relative;height:16px;"><span class="prog-marker" style="position:absolute;left:0;">0</span><span class="prog-marker" style="position:absolute;left:33.3%;transform:translateX(-50%);color:var(--gold)">60 🎯 ₡100k</span><span class="prog-marker" style="position:absolute;right:0;color:var(--green)">180 💎 ₡250k</span></div>
+    </div>
+    ${sig?`<div style="margin-top:10px;font-size:12px;color:var(--dim2);">Próxima meta: <strong style="color:${sig.color}">${sig.emoji} ${sig.nombre}</strong> — faltan <strong style="color:${niv.color}">${faltaSig} unidades</strong></div>`:''}
+  `;
+
+  const sg=document.getElementById('stats-grid');
+  const ventasHoy=getVentasHoy();const unidadesHoy=ventasHoy.reduce((a,v)=>a+v.units,0);
+  if(sg)sg.innerHTML=`
+    <div class="sc blue"><div class="sc-lbl">Vendido hoy</div><div class="sc-val blue">${unidadesHoy}</div><div class="sc-sub">${unidadesHoy>=10?'✅ Meta diaria cumplida':'Mínimo: 10 unidades'}</div></div>
+    <div class="sc green"><div class="sc-lbl">Esta semana</div><div class="sc-val green">${v}</div><div class="sc-sub">de 180 meta máxima</div></div>
+    <div class="sc gold"><div class="sc-lbl">Falta para tu meta</div><div class="sc-val gold">${sig?faltaSig:0}</div><div class="sc-sub">${sig?'unidades para '+fmt(sig.pago):'¡Meta máxima lograda!'}</div></div>
+    <div class="sc purple"><div class="sc-lbl">Récord personal</div><div class="sc-val purple">${record||'—'}</div><div class="sc-sub">mejor semana</div></div>
+  `;
+
+  // Días
+  const dias=document.getElementById('dias-grid');
+  if(dias){
+    const hoy=new Date().getDay();const hoyIdx=hoy===0?6:hoy-1;
+    const ventasPorDia=(LOCAL&&LOCAL.ventasLocales||[]).reduce((acc,v)=>{
+      if(!v.fecha)return acc;
+      const d=new Date(v.fechaISO||v.fecha);const idx=d.getDay()===0?6:d.getDay()-1;
+      if(!acc[idx])acc[idx]=0;acc[idx]+=v.units;return acc;
+    },{});
+    const maxDia=Math.max(...Object.values(ventasPorDia),10);
+    dias.innerHTML=DIAS_SEM.map((d,i)=>{
+      const u=ventasPorDia[i]||0;const h=Math.max(4,Math.round((u/maxDia)*56));
+      const esHoy=i===hoyIdx;const color=u>=10?'var(--green)':u>0?'var(--blue)':'rgba(255,255,255,.05)';
+      return `<div class="dia-col${esHoy?' hoy':''}">
+        <div class="dia-lbl">${d}</div>
+        <div class="dia-bar" style="height:${h}px;background:${color};"></div>
+        <div class="dia-num${esHoy?' hoy':''}">${u||'—'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  renderRankMini();
+}
+
+function renderRankMini(){
+  const el=document.getElementById('rank-mini');if(!el)return;
+  const emps=getEmps().slice().sort((a,b)=>(b.vendidoSemana||0)-(a.vendidoSemana||0)).slice(0,3);
+  if(!emps.length){el.innerHTML='<div style="color:var(--dim2);font-size:13px;">Sin datos del equipo aún.</div>';return;}
+  const max=Math.max(...emps.map(e=>e.vendidoSemana||0),1);
+  const medals=['🥇','🥈','🥉'];const myName=getMyEmp()?.name;
+  el.innerHTML=emps.map((e,i)=>{
+    const ini=e.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const p=Math.round(((e.vendidoSemana||0)/max)*100);const isMe=e.name===myName;
+    return `<div class="ri">
+      <div class="ri-num" style="color:${i===0?'var(--gold)':i===1?'var(--dim)':'var(--dim2)'}">${medals[i]}</div>
+      <div class="ri-av" style="background:${isMe?'rgba(0,191,255,.15)':'rgba(255,255,255,.05)'};color:${isMe?'var(--blue)':'var(--dim2)'};">${ini}</div>
+      <div class="ri-info">
+        <div class="ri-name" style="${isMe?'color:var(--blue);font-weight:700;':''}">${e.name}${isMe?' (vos)':''}</div>
+        <div class="ri-bar"><div class="ri-bar-fill" style="width:${p}%;background:${i===0?'var(--gold)':'var(--blue)'}"></div></div>
+      </div>
+      <div><div class="ri-val" style="color:${i===0?'var(--gold)':'var(--white)'}">${e.vendidoSemana||0}</div><div class="ri-sal">${fmt(calcSal(e.vendidoSemana||0))}</div></div>
+    </div>`;
+  }).join('');
+}
+
+/* RENDER VENDER */
+function renderVender(){
+  const pb=document.getElementById('precio-btns');
+  if(pb)pb.innerHTML=PRECIOS.map(p=>`
+    <div class="precio-btn${selPrecio===p.id?' selected':''}" style="${p.id==='suelto5'?'grid-column:1/-1;':''}" onclick="selPrecioFn('${p.id}')">
+      <div class="pb-emoji">${p.emoji}</div>
+      <div class="pb-title">${p.title}</div>
+      <div class="pb-price" style="color:${p.color}">${fmt(p.price)}</div>
+      <div class="pb-sub">${p.sub}</div>
+      <div class="pb-margin" style="color:${p.color}">${p.marginLbl}</div>
+    </div>
+  `).join('');
+  document.getElementById('qty-display').textContent=qty;
+  updateVentaPreview();
+  renderVentasHoy();
+}
+
+function selPrecioFn(id){
+  selPrecio=id;qty=1;
+  renderVender();
+}
+function cambiarQty(d){
+  qty=Math.max(1,qty+d);
+  document.getElementById('qty-display').textContent=qty;
+  updateVentaPreview();
+}
+function updateVentaPreview(){
+  const el=document.getElementById('venta-preview');if(!el)return;
+  const p=PRECIOS.find(x=>x.id===selPrecio);
+  if(!p){el.innerHTML='';return;}
+  const totalUnits=p.units*qty;const totalMargin=p.margin*qty;const totalPrice=p.price*qty;
+  el.innerHTML=`<div class="venta-preview">
+    <div class="venta-preview-title">Resumen de esta venta</div>
+    <div class="prow"><span class="lbl">Precio cobrado</span><span>${fmt(totalPrice)}</span></div>
+    <div class="prow"><span class="lbl">Unidades contabilizadas</span><span>${totalUnits}</span></div>
+    <div class="prow"><span class="lbl">Total semana después</span><span style="color:var(--green);font-weight:700;">${((getMyEmp()||{}).vendidoSemana||0)+totalUnits} unidades</span></div>
+  </div>`;
+}
+
+function renderVentasHoy(){
+  const el=document.getElementById('ventas-hoy');if(!el)return;
+  const vh=getVentasHoy();
+  if(!vh.length){el.innerHTML='<div style="color:var(--dim2);font-size:13px;">Aún no registraste ninguna venta hoy.</div>';return;}
+  const totalU=vh.reduce((a,v)=>a+v.units,0);
+  el.innerHTML=vh.map(v=>`<div class="prow"><span class="lbl">${v.tipo} × ${v.qty}</span><span style="color:var(--green)">+${v.units} uds</span></div>`).join('')+
+    `<div class="sep"></div><div class="prow"><span class="lbl" style="font-weight:700;">Total hoy</span><span><strong>${totalU} unidades</strong></span></div>`;
+}
+
+async function confirmarVenta(){
+  const p=PRECIOS.find(x=>x.id===selPrecio);
+  if(!p){toast('Seleccioná un tipo de venta primero','error');return;}
+  const e=getMyEmp();
+  if(!e){toast('No se encontró tu perfil. Avisale al admin.','error');return;}
+
+  const totalUnits=p.units*qty;const totalMargin=p.margin*qty;
+  const prevSem=e.vendidoSemana||0;
+  e.vendidoSemana=(e.vendidoSemana||0)+totalUnits;
+  if(!e.histDiario)e.histDiario=[];
+  e.histDiario.unshift({fecha:new Date().toLocaleString('es-CR',{hour12:false}),tipo:'liquidacion',vendido:totalUnits,devuelto:0});
+  if((e.vendidoSemana)>(e.recordSemana||0))e.recordSemana=e.vendidoSemana;
+  if(!S.log)S.log=[];
+  S.log.unshift({msg:`${e.name} vendió ${totalUnits} uds (${p.title})`,c:'blue',time:new Date().toLocaleString('es-CR',{hour12:false})});
+
+  if(!LOCAL.ventasLocales)LOCAL.ventasLocales=[];
+  LOCAL.ventasLocales.unshift({tipo:p.title,id:p.id,units:totalUnits,qty,margin:totalMargin,price:p.price*qty,fecha:new Date().toLocaleDateString('es-CR'),fechaISO:new Date().toISOString()});
+  saveL(LOCAL);
+
+  const prevNiv=getNivel(prevSem);const newNiv=getNivel(e.vendidoSemana);
+  const subioNivel=newNiv.nombre!==prevNiv.nombre;
+  const nuevaSem=e.vendidoSemana;
+
+  selPrecio=null;qty=1;
+  renderAll();
+  toast(`¡+${totalUnits} unidades registradas! 🔥`,'success');
+  await saveCloud();
+
+  if(subioNivel){
+    setTimeout(()=>showCel(newNiv.emoji,'¡META ALCANZADA!','Llegaste a '+newNiv.nombre+' '+newNiv.emoji+'. Seguí por la siguiente.'),400);
+  } else if(nuevaSem>=180&&prevSem<180){
+    setTimeout(()=>showCel('💎','¡DIAMOND!','180 unidades en la semana. Sos lo mejor del equipo.'),400);
+  } else if(nuevaSem===e.recordSemana&&prevSem<nuevaSem){
+    setTimeout(()=>showCel('👑','¡NUEVO RÉCORD!','Superaste tu mejor semana anterior. Imparable.'),400);
+  }
+}
+
+/* RENDER PROGRESO */
+function renderProgreso(){
+  const e=getMyEmp();const v=e?e.vendidoSemana||0:0;const total=getTotalHist();
+
+  const ladder=document.getElementById('nivel-ladder');
+  if(ladder)ladder.innerHTML='<div class="nivel-ladder">'+NIVELES.filter(n=>n.pago).map(n=>{
+    const done=v>=n.min;const prevMin=n.min===60?0:60;const current=!done&&v>=prevMin;
+    return `<div class="nivel-item${done?' done':current?' current':' locked'}" style="border-color:${n.color}${current?'':'40'};background:${n.color}${current?'10':'08'}">
+      <div class="nivel-emoji">${n.emoji}</div>
+      <div class="nivel-info">
+        <div class="nivel-name" style="color:${n.color}">${n.nombre}</div>
+        <div class="nivel-range">${n.min} unidades en la semana (te faltan ${Math.max(0,n.min-v)})</div>
+      </div>
+      <div class="nivel-pago" style="color:${n.color}">${fmt(n.pago)}</div>
+      <div class="nivel-check">${done?'✅':current?'👉':'🔒'}</div>
+    </div>`;
+  }).join('')+'</div>';
+
+  const vh=getVentasHoy();const combosHoy=vh.filter(x=>x.id==='promo2').reduce((a,x)=>a+x.qty,0);
+  const record=e?e.recordSemana||0:0;
+  const lg=document.getElementById('logros-grid');
+  if(lg)lg.innerHTML=LOGROS_DEF.map(l=>{
+    let val=0;
+    if(l.tipo==='total')val=v;
+    else if(l.tipo==='dia')val=getVentasHoy().reduce((a,x)=>a+x.units,0);
+    else if(l.tipo==='semana')val=v;
+    else if(l.tipo==='combos')val=combosHoy;
+    else if(l.tipo==='total_hist')val=total;
+    else if(l.tipo==='record')val=record>0&&v>=record?1:0;
+    else if(l.tipo==='metas')val=(LOCAL.metas||[]).length;
+    const done=val>=l.req;
+    return `<div class="logro${done?' done':' locked'}" style="border-color:${done?'rgba(200,168,75,.25)':'rgba(255,255,255,.05)'}">
+      <div class="logro-icon">${l.icon}</div>
+      <div class="logro-name">${l.name}</div>
+      <div class="logro-desc">${l.desc}</div>
+      <div class="logro-prog" style="color:${done?'var(--green)':'var(--dim2)'}">${done?'¡Logrado! ✓':val+'/'+l.req}</div>
+    </div>`;
+  }).join('');
+}
+
+/* RENDER METAS */
+function renderMetas(){
+  const e=getMyEmp();const v=e?e.vendidoSemana||0:0;const sal=calcSal(v);
+  const fh=document.getElementById('fin-hero');
+  if(fh)fh.innerHTML=`
+    <div style="font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;">Salario proyectado esta semana</div>
+    <div class="fin-sal">${fmt(sal)}</div>
+    <div class="fin-lbl">basado en ${v} unidades vendidas</div>
+    <div class="fin-3">
+      <div class="fin-b"><div class="fin-b-icon">🏠</div><div class="fin-b-lbl">Vivir 70%</div><div class="fin-b-val" style="color:var(--white)">${fmt(sal*.7)}</div></div>
+      <div class="fin-b"><div class="fin-b-icon">🏦</div><div class="fin-b-lbl">Ahorrar 20%</div><div class="fin-b-val" style="color:var(--green)">${fmt(sal*.2)}</div></div>
+      <div class="fin-b"><div class="fin-b-icon">📚</div><div class="fin-b-lbl">Crecer 10%</div><div class="fin-b-val" style="color:var(--blue)">${fmt(sal*.1)}</div></div>
+    </div>
+  `;
+  const ft=document.getElementById('fin-tabla');
+  if(ft)ft.innerHTML=[{u:60,label:'🎯 Meta 60',pago:100000},{u:180,label:'💎 Diamond 180',pago:250000}].map(n=>{
+    const done=v>=n.u;
+    return `<div class="prow"><span class="lbl">${n.label} · ${n.u} unidades</span><span style="color:var(--gold);font-weight:700;">${fmt(n.pago)}${done?' ✅':''}</span></div>`;
+  }).join('');
+  const fr=document.getElementById('fin-regla');
+  if(fr)fr.innerHTML=`
+    <div class="prow"><span class="lbl">Ganás ₡100,000/semana</span><span style="color:var(--green)">Ahorrás ₡20,000/sem</span></div>
+    <div class="prow"><span class="lbl">En 1 mes</span><span style="color:var(--green)">₡80,000 ahorrados</span></div>
+    <div class="prow"><span class="lbl">Si llegás a Diamond (₡250k)</span><span style="color:var(--gold)">Ahorrás ₡50,000/sem</span></div>
+    <div class="prow"><span class="lbl">Diamond por 1 mes</span><span style="color:var(--gold)">₡200,000 ahorrados</span></div>
+    <div class="prow"><span class="lbl">Diamond por 6 meses</span><span style="color:var(--gold);font-weight:700;">₡1,200,000 ahorrados</span></div>
+  `;
+  const fm=document.getElementById('fin-metas-list');
+  if(fm){
+    const metas=LOCAL.metas||[];
+    if(!metas.length){fm.innerHTML='<div style="color:var(--dim2);font-size:13px;padding:4px 0;">Agregá tu primera meta. ¿Qué querés comprar o lograr?</div>';}
+    else fm.innerHTML=metas.map((m,i)=>{
+      const p=Math.min(100,Math.round((m.ahorro/m.total)*100));
+      const falta=Math.max(0,m.total-m.ahorro);const sems=Math.ceil(falta/(calcSal(60)*.2));
+      return `<div class="meta-fin">
+        <div class="meta-fin-top"><span>🎯 ${m.name}</span><span class="meta-fin-pct">${p}%</span></div>
+        <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${p}%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:3px;"></div></div>
+        <div class="meta-fin-sub">${fmt(m.ahorro)} / ${fmt(m.total)} · ~${sems} semanas ahorrando el 20%</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* RENDER RANKING */
+function renderRanking(){
+  const el=document.getElementById('rank-full');if(!el)return;
+  const emps=getEmps().slice().sort((a,b)=>(b.vendidoSemana||0)-(a.vendidoSemana||0));
+  if(!emps.length){el.innerHTML='<div style="color:var(--dim2);font-size:13px;">Sin datos del equipo aún.</div>';return;}
+  const max=Math.max(...emps.map(e=>e.vendidoSemana||0),1);
+  const medals=['🥇','🥈','🥉'];const myName=getMyEmp()?.name;
+  el.innerHTML='<div class="ct"><div class="dot r"></div>Ranking semana actual</div>'+
+    emps.map((e,i)=>{
+      const ini=e.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      const p=Math.round(((e.vendidoSemana||0)/max)*100);const isMe=e.name===myName;
+      const niv=getNivel(e.vendidoSemana||0);
+      return `<div class="ri" style="${isMe?'background:rgba(0,191,255,.04);border-radius:10px;padding:9px 10px;margin:0 -10px;':''}">
+        <div class="ri-num" style="color:${i<3?'var(--gold)':'var(--dim2)'}">${medals[i]||'#'+(i+1)}</div>
+        <div class="ri-av" style="background:${isMe?'rgba(0,191,255,.15)':'rgba(255,255,255,.05)'};color:${isMe?'var(--blue)':niv.color};">${ini}</div>
+        <div class="ri-info">
+          <div class="ri-name" style="${isMe?'color:var(--blue);font-weight:700;':''}">${e.name}${isMe?' ← vos':''}</div>
+          <div style="font-size:10px;color:${niv.color};margin-bottom:3px;">${niv.emoji} ${niv.nombre}</div>
+          <div class="ri-bar"><div class="ri-bar-fill" style="width:${p}%;background:${niv.color}"></div></div>
+        </div>
+        <div><div class="ri-val" style="color:${isMe?'var(--blue)':i===0?'var(--gold)':'var(--white)'}">${e.vendidoSemana||0} uds</div><div class="ri-sal">${fmt(calcSal(e.vendidoSemana||0))}</div></div>
+      </div>`;
+    }).join('');
+}
+
+/* META FINANCIERA */
+function addMeta(){
+  const name=document.getElementById('mt-name').value.trim();
+  const total=parseFloat(document.getElementById('mt-total').value)||0;
+  const ahorro=parseFloat(document.getElementById('mt-ahorro').value)||0;
+  if(!name||!total){toast('Completá nombre y monto','error');return;}
+  if(!LOCAL.metas)LOCAL.metas=[];
+  LOCAL.metas.push({name,total,ahorro});saveL(LOCAL);
+  document.getElementById('mt-name').value='';document.getElementById('mt-total').value='';document.getElementById('mt-ahorro').value='';
+  closeM('m-meta');renderMetas();toast('Meta guardada 🎯');
+}
+
+function renderAll(){
+  renderInicio();renderVender();renderProgreso();renderMetas();renderRanking();
+}
+
+/* INIT */
+async function initApp(){
+  LOCAL=loadL();
+  setSS('syncing');
+  const cloud=await getCloud();
+  if(cloud&&cloud.empleados&&cloud.empleados.length){S=cloud;setSS('ok');}else{S={"inv": {"gel": {"recibido": 0, "entregado": 0}, "cera": {"recibido": 0, "entregado": 0}}, "empleados": [{"id": 1000003, "name": "Allison", "role": "Vendedora", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}, {"id": 1000002, "name": "Jordán", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}], "vp": [], "log": [], "semanas": [], "cfg": {"md": 10}};setSS('offline');toast('Sin conexión — usando datos locales','info');}
+  populateWho();
+  const saved=localStorage.getItem('ab_my_id');
+  if(saved){
+    myEmpId=saved;
+    const emp=getMyEmp();
+    if(emp){
+      document.getElementById('who-screen').style.display='none';
+      document.getElementById('tuser').textContent=emp.name.split(' ')[0].toUpperCase();
+    }
+  }
+  renderAll();
+  setInterval(async()=>{
+    const cloud=await getCloud();
+    if(cloud&&cloud.empleados&&cloud.empleados.length&&JSON.stringify(cloud)!==JSON.stringify(S)){S=cloud;renderAll();setSS('ok');}
+  },20000);
+}
+initApp();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>

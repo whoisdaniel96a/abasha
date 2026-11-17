@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Abasha CR · Admin</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Abasha Admin">
+<meta name="theme-color" content="#07090D">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --onyx:#07090D;--onyx2:#0C0F16;--onyx3:#131820;
+  --blue:#00BFFF;--red:#E8192C;--gold:#C8A84B;--green:#00E676;
+  --white:#EEF2FF;--dim:rgba(238,242,255,.68);--dim2:rgba(238,242,255,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--onyx);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--red);}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--onyx);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;}
+.login-box{width:100%;max-width:380px;}
+.login-logo{font-family:'Bebas Neue';font-size:38px;letter-spacing:.1em;margin-bottom:4px;text-align:center;}
+.login-logo span{color:var(--red);}
+.login-badge{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--dim2);text-align:center;margin-bottom:28px;}
+.login-card{background:var(--onyx2);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;}
+.flabel{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:5px;display:block;}
+input,select,textarea{width:100%;background:var(--onyx3);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:var(--white);font-family:'Exo 2';font-size:14px;padding:10px 13px;outline:none;transition:border .2s;}
+input:focus,select:focus{border-color:rgba(232,25,44,.4);}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:14px;}
+.btn{font-family:'Rajdhani';font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:10px 18px;border-radius:7px;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-full{width:100%;}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 4px 18px rgba(232,25,44,.3);}
+.btn-red:hover{background:#c71020;}
+.btn-blue{background:rgba(0,191,255,.12);color:var(--blue);border:1px solid rgba(0,191,255,.25);}
+.btn-blue:hover{background:rgba(0,191,255,.22);}
+.btn-gold{background:rgba(200,168,75,.12);color:var(--gold);border:1px solid rgba(200,168,75,.25);}
+.btn-gold:hover{background:rgba(200,168,75,.22);}
+.btn-green{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.22);}
+.btn-ghost{background:transparent;color:var(--dim);border:1px solid rgba(255,255,255,.1);}
+.btn-ghost:hover{border-color:rgba(255,255,255,.28);color:var(--white);}
+.btn-sm{padding:7px 13px;font-size:10px;}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.login-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;min-height:18px;}
+
+/* NAV */
+#app{display:none;}
+nav{position:sticky;top:0;z-index:100;background:rgba(7,9,13,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);}
+.nav-i{max-width:1300px;margin:0 auto;padding:0 14px;height:56px;display:flex;align-items:center;gap:8px;}
+.nav-logo{font-family:'Bebas Neue';font-size:19px;letter-spacing:.1em;white-space:nowrap;}
+.nav-logo span{color:var(--red);}
+.nav-tabs{display:flex;gap:1px;flex:1;overflow-x:auto;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim2);padding:6px 11px;border-radius:5px;cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap;}
+.nav-tab.active{color:var(--red);background:rgba(232,25,44,.08);border:1px solid rgba(232,25,44,.18);}
+.nav-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);transition:background .4s;}
+.sync-lbl{font-family:'Rajdhani';font-size:10px;font-weight:700;color:var(--dim2);white-space:nowrap;}
+.user-badge{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 9px;border-radius:20px;background:rgba(232,25,44,.1);color:var(--red);border:1px solid rgba(232,25,44,.2);}
+.bsm{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--dim);cursor:pointer;transition:all .2s;}
+.bsm:hover{color:var(--white);border-color:rgba(255,255,255,.25);}
+.bsm.danger{border-color:rgba(232,25,44,.3);color:var(--red);}
+.bsm.gold{border-color:rgba(200,168,75,.3);color:var(--gold);}
+
+/* BACKUP BAR */
+.backup-bar{background:var(--onyx3);border-bottom:1px solid rgba(255,255,255,.05);padding:5px 0;}
+.backup-i{max-width:1300px;margin:0 auto;padding:0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.backup-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim2);}
+.backup-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+.backup-actions{display:flex;gap:5px;}
+
+/* PAGES */
+.page{display:none;max-width:1300px;margin:0 auto;padding:22px 14px 60px;}
+.page.active{display:block;}
+.stripe{height:2px;background:linear-gradient(90deg,transparent,var(--red) 30%,var(--gold) 70%,transparent);margin-bottom:22px;}
+.page-title{font-family:'Bebas Neue';font-size:clamp(24px,4vw,38px);letter-spacing:.06em;margin-bottom:2px;}
+.page-title .r{color:var(--red);}
+.page-title .b{color:var(--blue);}
+.page-title .g{color:var(--gold);}
+.page-sub{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--dim2);margin-bottom:22px;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr;}}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin-bottom:22px;}
+.mc{background:var(--onyx2);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:15px 17px;position:relative;overflow:hidden;}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.mc.red::before{background:linear-gradient(90deg,var(--red),transparent);}
+.mc.blue::before{background:linear-gradient(90deg,var(--blue),transparent);}
+.mc.gold::before{background:linear-gradient(90deg,var(--gold),transparent);}
+.mc.green::before{background:linear-gradient(90deg,var(--green),transparent);}
+.mc-label{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:5px;}
+.mc-val{font-family:'Bebas Neue';font-size:26px;letter-spacing:.03em;line-height:1;}
+.mc-val.red{color:var(--red);}.mc-val.blue{color:var(--blue);}.mc-val.gold{color:var(--gold);}.mc-val.green{color:var(--green);}
+.mc-sub{font-size:11px;color:var(--dim2);margin-top:2px;}
+
+/* CARD */
+.card{background:var(--onyx2);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:18px 20px;margin-bottom:13px;}
+.card-title{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.dot.r{background:var(--red);}.dot.b{background:var(--blue);}.dot.g{background:var(--gold);}.dot.gr{background:var(--green);}
+.sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);margin:12px 0;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);padding:8px 11px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);}
+td{padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--dim);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.td-n{font-family:'Rajdhani';font-size:13px;font-weight:700;color:var(--white);}
+.td-r{color:var(--red)!important;}.td-b{color:var(--blue)!important;}.td-gr{color:var(--green)!important;}.td-g{color:var(--gold)!important;}
+
+/* ALERT */
+.alert{padding:9px 13px;border-radius:7px;font-size:13px;margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.alert.warn{background:rgba(200,168,75,.07);border:1px solid rgba(200,168,75,.2);color:var(--gold);}
+.alert.danger{background:rgba(232,25,44,.07);border:1px solid rgba(232,25,44,.2);color:var(--red);}
+.alert.success{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.18);color:var(--green);}
+.alert.info{background:rgba(0,191,255,.05);border:1px solid rgba(0,191,255,.15);color:var(--blue);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--onyx2);border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:24px;max-width:440px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Bebas Neue';font-size:21px;letter-spacing:.05em;margin-bottom:2px;}
+.modal-sub{font-size:12px;color:var(--dim2);margin-bottom:16px;}
+.modal-close{position:absolute;top:13px;right:13px;background:transparent;border:none;color:var(--dim2);font-size:17px;cursor:pointer;}
+.modal-close:hover{color:var(--white);}
+
+/* PREVIEW */
+.pbox{background:var(--onyx3);border:1px solid rgba(0,191,255,.13);border-radius:7px;padding:11px 13px;margin-top:9px;}
+.ptitle{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:7px;}
+.prow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.prow:last-child{border-bottom:none;padding-top:5px;font-weight:600;}
+.prow .lbl{color:var(--dim2);}
+
+/* COMP */
+.comp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px;}
+.comp-item{background:var(--onyx3);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:9px 11px;text-align:center;}
+.comp-name{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:3px;}
+.comp-qty{font-family:'Bebas Neue';font-size:24px;}
+.comp-qty.ok{color:var(--green);}.comp-qty.warn{color:var(--gold);}.comp-qty.out{color:var(--red);}
+
+/* BADGE */
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;font-family:'Rajdhani';}
+.badge.ok{background:rgba(0,230,118,.1);color:var(--green);}
+.badge.warn{background:rgba(200,168,75,.1);color:var(--gold);}
+.badge.out{background:rgba(232,25,44,.1);color:var(--red);}
+
+/* INNER TABS */
+.itabs{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:2px;}
+.itab{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dim2);padding:5px 13px;border-radius:4px 4px 0 0;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .2s;}
+.itab.active{color:var(--red);border-bottom-color:var(--red);}
+.ipane{display:none;}.ipane.active{display:block;}
+
+/* CANAL CARDS */
+.canal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px;}
+.canal-card{border-radius:10px;padding:14px 16px;border:1px solid;}
+.canal-card.personal{background:rgba(0,191,255,.04);border-color:rgba(0,191,255,.18);}
+.canal-card.gasolinera{background:rgba(232,25,44,.04);border-color:rgba(232,25,44,.18);}
+.canal-card.internet{background:rgba(200,168,75,.04);border-color:rgba(200,168,75,.18);}
+.canal-name{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:3px;}
+.canal-name.b{color:var(--blue);}.canal-name.r{color:var(--red);}.canal-name.g{color:var(--gold);}
+.canal-price{font-family:'Bebas Neue';font-size:24px;margin-bottom:1px;}
+.canal-sub{font-size:11px;color:var(--dim2);}
+
+/* RANK */
+.rank-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rank-item:last-child{border-bottom:none;}
+.rank-num{font-family:'Bebas Neue';font-size:17px;width:22px;flex-shrink:0;}
+.rank-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:13px;flex-shrink:0;background:rgba(0,230,118,.12);color:var(--green);}
+.rank-info{flex:1;}
+.rank-name{font-size:13px;font-weight:500;color:var(--white);}
+.rank-sub{font-size:11px;color:var(--dim2);}
+.rank-val{font-family:'Rajdhani';font-size:13px;font-weight:700;color:var(--green);}
+
+/* EMP CARD */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:11px;}
+.emp-card{background:var(--onyx3);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:15px;position:relative;overflow:hidden;}
+.emp-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),rgba(0,230,118,.15));}
+.emp-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),rgba(0,191,255,.25));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:14px;color:var(--onyx);margin-bottom:7px;}
+.emp-name{font-family:'Rajdhani';font-size:13px;font-weight:700;color:var(--white);}
+.emp-role{font-size:11px;color:var(--dim2);margin-bottom:9px;}
+.emp-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;}
+.emp-row .l{color:var(--dim2);}
+.emp-row .v{font-family:'Rajdhani';font-size:12px;font-weight:700;color:var(--white);}
+.emp-sal{margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;}
+.emp-sal-lbl{font-size:10px;color:var(--dim2);}
+.emp-sal-val{font-family:'Bebas Neue';font-size:19px;color:var(--gold);}
+.prog-track{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin:5px 0;}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .5s;}
+
+/* LOG */
+.log-item{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.log-item:last-child{border-bottom:none;}
+.log-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.log-msg{font-size:12px;color:var(--dim);flex:1;}
+.log-time{font-size:10px;color:var(--dim2);white-space:nowrap;font-family:'Rajdhani';}
+
+/* WEEK */
+.week-wrap{display:flex;gap:3px;align-items:flex-end;height:66px;}
+.wbar{flex:1;border-radius:3px 3px 0 0;background:rgba(232,25,44,.2);border:1px solid rgba(232,25,44,.35);min-height:3px;transition:height .4s;}
+.wdays{display:flex;gap:3px;margin-top:4px;}
+.wday{flex:1;text-align:center;font-family:'Rajdhani';font-size:9px;font-weight:700;color:var(--dim2);}
+
+/* PRIVATE */
+.private-banner{background:rgba(0,191,255,.04);border:1px solid rgba(0,191,255,.13);border-radius:9px;padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--blue);}
+
+/* USER */
+.user-card{background:var(--onyx3);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:12px 15px;display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.user-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:13px;flex-shrink:0;}
+.user-icon.admin{background:rgba(232,25,44,.18);color:var(--red);}
+.user-icon.socio{background:rgba(200,168,75,.18);color:var(--gold);}
+.user-icon.mano{background:rgba(0,191,255,.18);color:var(--blue);}
+.user-icon.emp{background:rgba(0,230,118,.12);color:var(--green);}
+.user-info{flex:1;}
+.user-name{font-size:13px;font-weight:500;color:var(--white);}
+.user-role-lbl{font-size:11px;color:var(--dim2);}
+
+/* FROW */
+.frow{display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;margin-top:9px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:18px;right:18px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
+.toast-item{background:var(--onyx2);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 14px;font-size:13px;max-width:270px;animation:tin .3s ease;box-shadow:0 7px 26px rgba(0,0,0,.4);}
+.toast-item.success{border-color:rgba(0,230,118,.28);color:var(--green);}
+.toast-item.error{border-color:rgba(232,25,44,.28);color:var(--red);}
+.toast-item.info{border-color:rgba(0,191,255,.28);color:var(--blue);}
+@keyframes tin{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:translateY(0);}}
+</style>
+
+<link rel="manifest" href="manifest-admin.json">
+<link rel="icon" type="image/png" href="admin-192.png">
+<link rel="apple-touch-icon" href="admin-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">ABASHA <span>CR</span></div>
+    <div class="login-badge">Panel Administrativo</div>
+    <div class="login-card">
+      <div class="fg"><label class="flabel">Usuario</label><input type="text" id="lu" placeholder="tu usuario" autocomplete="username"></div>
+      <div class="fg"><label class="flabel">Contraseña</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-red btn-full" onclick="doLogin()">Entrar al Sistema</button>
+      <div class="login-err" id="lerr"></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="app">
+<nav>
+  <div class="nav-i">
+    <div class="nav-logo">ABASHA <span>CR</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+      <button class="nav-tab" onclick="showPage('personal',this)">Mis Ventas</button>
+      <button class="nav-tab" onclick="showPage('inventario',this)">Inventario</button>
+      <button class="nav-tab" onclick="showPage('empleados',this)">Empleados</button>
+      <button class="nav-tab" onclick="showPage('reportes',this)">Reportes</button>
+      <button class="nav-tab" onclick="showPage('usuarios',this)">Usuarios</button>
+    </div>
+    <div class="nav-right">
+      <div class="sync-dot" id="sdot"></div>
+      <span class="sync-lbl" id="slbl">Conectando...</span>
+      <span class="user-badge" id="ubadge">ADMIN</span>
+      <button class="bsm" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+</nav>
+<div class="backup-bar">
+  <div class="backup-i">
+    <div class="backup-status">
+      <div class="backup-dot" id="bdot"></div>
+      <span id="btxt" style="font-size:11px;color:var(--dim2);">Sin respaldo reciente</span>
+    </div>
+    <div class="backup-actions">
+      <button class="bsm" onclick="dlBackup()">↓ Respaldo</button>
+      <button class="bsm gold" onclick="document.getElementById('rin').click()">↑ Restaurar</button>
+      <input type="file" id="rin" accept=".json" style="display:none" onchange="restoreB(event)">
+      <button class="bsm danger" onclick="resetAll()">⟳ Reinicio</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="stripe"></div>
+  <div class="page-title">Dashboard <span class="r">Admin</span></div>
+  <div class="page-sub">Resumen general · Abasha CR</div>
+  <div id="da"></div>
+  <div class="metrics" id="dm"></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><div class="dot r"></div>Canales de Venta</div><div class="canal-grid" id="dc"></div></div>
+    <div class="card"><div class="card-title"><div class="dot g"></div>Top Vendedores</div><div id="dr"></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><div class="dot gr"></div>Ventas esta semana</div>
+      <div class="week-wrap" id="dwb"></div><div class="wdays" id="dwd"></div>
+    </div>
+    <div class="card"><div class="card-title"><div class="dot b"></div>Últimos movimientos</div><div id="dl" style="max-height:180px;overflow-y:auto;"></div></div>
+  </div>
+</div>
+
+<!-- MIS VENTAS -->
+<div id="page-personal" class="page">
+  <div class="stripe"></div>
+  <div class="page-title">Mis <span class="b">Ventas</span></div>
+  <div class="page-sub">Registro personal · Privado · No visible para empleados</div>
+  <div class="private-banner">🔒 Solo vos ves esta sección — no aparece en rankings ni reportes de empleados</div>
+  <div class="metrics" id="pm"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title"><div class="dot b"></div>Registrar Venta Personal</div>
+      <div class="fg"><label class="flabel">Producto</label>
+        <select id="pvprod"><option value="gel">Gel Desengrasador</option><option value="cera">Cera Smart Wax</option></select></div>
+      <div class="fg"><label class="flabel">Canal / Precio</label>
+        <select id="pvcanal" onchange="upPVP()">
+          <option value="normal">En persona — ₡6,000 · Ganás ₡2,500</option>
+          <option value="descuento">Con descuento — ₡5,000 · Ganás ₡1,500</option>
+          <option value="internet">Internet — ₡8,000 · Ganás ₡4,000</option>
+        </select></div>
+      <div class="fg"><label class="flabel">Unidades</label><input type="number" id="pvqty" min="1" value="1" oninput="upPVP()" style="width:100px;"></div>
+      <div id="pvprev"></div>
+      <button class="btn btn-blue" style="margin-top:12px;" onclick="regVentaPersonal()">Registrar Venta</button>
+    </div>
+    <div class="card"><div class="card-title"><div class="dot g"></div>Resumen Personal</div><div id="pres"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><div class="dot gr"></div>Historial de Ventas Personales</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Canal</th><th>Precio</th><th>Cant.</th><th>Ganancia</th></tr></thead><tbody id="pvtbl"></tbody></table></div>
+  </div>
+</div>
+
+<!-- INVENTARIO -->
+<div id="page-inventario" class="page">
+  <div class="stripe"></div>
+  <div class="page-title">Inventario <span class="r">Abasha</span></div>
+  <div class="page-sub">Producto que te dan · Lo que entregás a tus vendedores</div>
+  <div id="ia"></div>
+  <div class="metrics" id="im"></div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot r"></div>Gel Desengrasador Multiusos</div>
+    <div class="g3" style="margin-bottom:10px;">
+      <div class="mc blue"><div class="mc-label">Recibido total</div><div class="mc-val blue" id="gel-recibido">0</div></div>
+      <div class="mc gold"><div class="mc-label">Entregado total</div><div class="mc-val gold" id="gel-entregado">0</div></div>
+      <div class="mc green"><div class="mc-label">Disponible ahora</div><div class="mc-val green" id="gel-disp">0</div></div>
+    </div>
+    <div class="sep"></div>
+    <label class="flabel">Recibiste producto nuevo</label>
+    <div class="frow" style="margin-top:8px;">
+      <div class="fg"><label class="flabel">Unidades recibidas</label><input type="number" id="gel-recv-qty" min="1" placeholder="Ej: 50" style="width:120px;"></div>
+      <button class="btn btn-blue btn-sm" onclick="recibirStock('gel')">+ Registrar recepción</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot b"></div>Cera Smart Wax</div>
+    <div class="g3" style="margin-bottom:10px;">
+      <div class="mc blue"><div class="mc-label">Recibido total</div><div class="mc-val blue" id="cera-recibido">0</div></div>
+      <div class="mc gold"><div class="mc-label">Entregado total</div><div class="mc-val gold" id="cera-entregado">0</div></div>
+      <div class="mc green"><div class="mc-label">Disponible ahora</div><div class="mc-val green" id="cera-disp">0</div></div>
+    </div>
+    <div class="sep"></div>
+    <label class="flabel">Recibiste producto nuevo</label>
+    <div class="frow" style="margin-top:8px;">
+      <div class="fg"><label class="flabel">Unidades recibidas</label><input type="number" id="cera-recv-qty" min="1" placeholder="Ej: 50" style="width:120px;"></div>
+      <button class="btn btn-blue btn-sm" onclick="recibirStock('cera')">+ Registrar recepción</button>
+    </div>
+  </div>
+
+  <div class="card"><div class="card-title"><div class="dot g"></div>Últimos Movimientos</div><div id="ilog" style="max-height:240px;overflow-y:auto;"></div></div>
+</div>
+
+<!-- EMPLEADOS -->
+<div id="page-empleados" class="page">
+  <div class="stripe"></div>
+  <div class="page-title">Equipo <span class="r">Abasha</span></div>
+  <div class="page-sub">Gestión de fuerza de ventas · Salario por rendimiento</div>
+  <div style="display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="btn btn-red btn-sm" onclick="openM('m-aemp')">+ Empleado</button>
+    <button class="btn btn-blue btn-sm" onclick="openM('m-ent')">Entregar Producto</button>
+    <button class="btn btn-gold btn-sm" onclick="openM('m-liq')">Liquidar Día</button>
+    <button class="btn btn-ghost btn-sm" onclick="openM('m-csem')">Cerrar Semana</button>
+  </div>
+  <div id="empgrid" class="emp-grid"></div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title"><div class="dot g"></div>Metas del vendedor · solo 2 metas</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Unidades / semana</th><th>Pago</th><th>Meta</th></tr></thead>
+    <tbody>
+      <tr><td>🎯 60 unidades</td><td class="td-g td-n">₡100,000</td><td class="td-n">Meta 1</td></tr>
+      <tr><td>💎 180 unidades</td><td class="td-g td-n">₡250,000</td><td class="td-n">Diamond</td></tr>
+    </tbody></table></div>
+    <div class="alert info" style="margin-top:9px;"><span>ℹ</span>Entrega máx: 25 unidades/día por empleado</div>
+  </div>
+</div>
+
+<!-- REPORTES -->
+<div id="page-reportes" class="page">
+  <div class="stripe"></div>
+  <div class="page-title">Reportes & <span class="g">Analítica</span></div>
+  <div class="page-sub">Ventas · Ganancias reales · Rendimiento del equipo</div>
+  <div class="itabs">
+    <button class="itab active" onclick="showIt('rg',this)">General</button>
+    <button class="itab" onclick="showIt('rge',this)">Ganancias Empleados</button>
+    <button class="itab" onclick="showIt('rc',this)">Por Canal</button>
+    <button class="itab" onclick="showIt('re',this)">Empleados</button>
+    <button class="itab" onclick="showIt('ri',this)">Inventario</button>
+  </div>
+  <div id="rg" class="ipane active">
+    <div class="metrics" id="rmet"></div>
+    <div class="g2">
+      <div class="card"><div class="card-title"><div class="dot gr"></div>Ventas semana</div>
+        <div class="week-wrap" id="rwb"></div><div class="wdays" id="rwd"></div></div>
+      <div class="card"><div class="card-title"><div class="dot g"></div>Ganancias por canal</div><div id="rcb"></div></div>
+    </div>
+  </div>
+  <div id="rge" class="ipane">
+    <div class="alert info"><span>💰</span>Por cada 60 unidades que vende un empleado: ₡3,500/u va a tu socio, ₡1,667/u al empleado, y <strong>₡833/u es tu ganancia</strong>. Proporcional a cualquier cantidad vendida.</div>
+    <div class="metrics" id="rge-metrics"></div>
+    <div class="card">
+      <div class="card-title"><div class="dot gr"></div>Tu ganancia por empleado · esta semana</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Empleado</th><th>Unidades vendidas</th><th>Pago a socio</th><th>Salario empleado</th><th>Tu ganancia</th></tr></thead><tbody id="rge-tbl"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot g"></div>Desglose por unidad (precio ₡6,000)</div>
+      <div id="rge-desglose"></div>
+    </div>
+  </div>
+  <div id="rc" class="ipane">
+    <div class="card"><div class="card-title"><div class="dot b"></div>Detalle por canal</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Canal</th><th>Unidades</th><th>Ingresos</th><th>Costo socio</th><th>Tu ganancia</th></tr></thead><tbody id="rctbl"></tbody></table></div>
+    </div>
+  </div>
+  <div id="re" class="ipane">
+    <div class="tbl-wrap"><table><thead><tr><th>Empleado</th><th>Entregado</th><th>Vendido</th><th>Devuelto</th><th>Pendiente</th><th>Salario sem.</th></tr></thead><tbody id="retbl"></tbody></table></div>
+  </div>
+  <div id="ri" class="ipane">
+    <div class="metrics" id="rimet"></div>
+    <div class="card"><div class="card-title"><div class="dot b"></div>Estado inventario</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Producto</th><th>Componente</th><th>Stock</th><th>Estado</th></tr></thead><tbody id="ritbl"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- USUARIOS -->
+<div id="page-usuarios" class="page">
+  <div class="stripe"></div>
+  <div class="page-title">Gestión de <span class="g">Usuarios</span></div>
+  <div class="page-sub">Control de acceso · Roles y permisos · % Mano Derecha</div>
+  <div style="margin-bottom:14px;"><button class="btn btn-gold btn-sm" onclick="openM('m-auser')">+ Crear Usuario</button></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><div class="dot r"></div>Usuarios del Sistema</div><div id="usrlst"></div></div>
+    <div class="card">
+      <div class="card-title"><div class="dot g"></div>Porcentaje Mano Derecha</div>
+      <div class="fg"><label class="flabel">% sobre ganancia bruta por canal</label><input type="number" id="cfgmd" min="0" max="100" value="10" oninput="saveCfg()" style="width:100px;"></div>
+      <div class="alert info" style="margin-top:9px;"><span>ℹ</span>Se resta automáticamente de la ganancia bruta en todos los reportes. Configuralo cuando lo definan.</div>
+      <div class="sep"></div><label class="flabel" style="margin-bottom:7px;display:block;">Ganancia neta tuya con % actual</label>
+      <div id="cfgres"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+
+<div class="modal-bg" id="m-aemp">
+  <div class="modal"><button class="modal-close" onclick="closeM('m-aemp')">✕</button>
+    <div class="modal-title">Nuevo <span style="color:var(--red)">Empleado</span></div><div class="modal-sub">Vendedor de campo</div>
+    <div class="fg"><label class="flabel">Nombre completo</label><input type="text" id="en" placeholder="Nombre..."></div>
+    <div class="fg"><label class="flabel">Zona / Descripción</label><input type="text" id="ez" placeholder="Zona Norte..."></div>
+    <button class="btn btn-red btn-full" onclick="addEmp()">Agregar Empleado</button>
+  </div>
+</div>
+<div class="modal-bg" id="m-ent">
+  <div class="modal"><button class="modal-close" onclick="closeM('m-ent')">✕</button>
+    <div class="modal-title">Entregar <span style="color:var(--blue)">Producto</span></div><div class="modal-sub">Máx. 25 por empleado por día</div>
+    <div class="fg"><label class="flabel">Empleado</label><select id="esel"></select></div>
+    <div class="fg"><label class="flabel">Producto</label><select id="eprod"><option value="gel">Gel Desengrasador</option><option value="cera">Cera Smart Wax</option></select></div>
+    <div class="fg"><label class="flabel">Cantidad</label><input type="number" id="eqty" min="1" max="25" value="25"></div>
+    <button class="btn btn-blue btn-full" onclick="entregarProd()">Confirmar Entrega</button>
+  </div>
+</div>
+<div class="modal-bg" id="m-liq">
+  <div class="modal"><button class="modal-close" onclick="closeM('m-liq')">✕</button>
+    <div class="modal-title">Liquidar <span style="color:var(--gold)">Día</span></div><div class="modal-sub">Registrar devoluciones al fin del día</div>
+    <div class="fg"><label class="flabel">Empleado</label><select id="lsel"></select></div>
+    <div class="fg"><label class="flabel">Unidades devueltas</label><input type="number" id="ldev" min="0" value="0" oninput="upLiqPrev()"></div>
+    <div id="lprev" style="margin-bottom:11px;"></div>
+    <button class="btn btn-gold btn-full" onclick="liquidar()">Registrar Liquidación</button>
+  </div>
+</div>
+<div class="modal-bg" id="m-csem">
+  <div class="modal"><button class="modal-close" onclick="closeM('m-csem')">✕</button>
+    <div class="modal-title">Cerrar <span style="color:var(--gold)">Semana</span></div>
+    <div class="modal-sub">Archiva ventas y reinicia contadores para la nueva semana.</div>
+    <div id="csemprev" style="margin-bottom:14px;"></div>
+    <button class="btn btn-gold btn-full" onclick="cerrarSemana()">Confirmar Cierre</button>
+  </div>
+</div>
+<div class="modal-bg" id="m-auser">
+  <div class="modal"><button class="modal-close" onclick="closeM('m-auser')">✕</button>
+    <div class="modal-title">Crear <span style="color:var(--gold)">Usuario</span></div><div class="modal-sub">Acceso al sistema</div>
+    <div class="fg"><label class="flabel">Nombre</label><input type="text" id="unn" placeholder="Nombre..."></div>
+    <div class="fg"><label class="flabel">Usuario (login)</label><input type="text" id="unu" placeholder="usuario123"></div>
+    <div class="fg"><label class="flabel">Contraseña</label><input type="password" id="unp" placeholder="••••••••"></div>
+    <div class="fg"><label class="flabel">Rol</label><select id="unr"><option value="socio">Socio</option><option value="mano">Mano Derecha</option><option value="empleado">Empleado Vendedor</option></select></div>
+    <button class="btn btn-gold btn-full" onclick="createUser()">Crear Usuario</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+
+<script>
+const SBU='https://jabyzohcabmabgvctarq.supabase.co',SBK='sb_publishable_OnSKgU_VU8leCmpz9NWWQg_TPJW882u';
+const SBH={'apikey':SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json'};
+async function sbGet(t,f=''){const r=await fetch(`${SBU}/rest/v1/${t}${f}`,{headers:{...SBH,'Prefer':'return=representation'}});if(!r.ok)throw new Error(await r.text());return r.json();}
+async function sbUp(t,d){const r=await fetch(`${SBU}/rest/v1/${t}`,{method:'POST',headers:{...SBH,'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return true;}
+
+/* AUTH */
+const DEF_USERS=[{username:'admin',password:'abasha2024',role:'admin',name:'Admin'}];
+function getU(){try{return JSON.parse(localStorage.getItem('ab_users'))||DEF_USERS;}catch(e){return DEF_USERS;}}
+function setU(u){localStorage.setItem('ab_users',JSON.stringify(u));}
+let CU=null;
+function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  const m=getU().find(x=>x.username===u&&x.password===p);
+  if(!m){document.getElementById('lerr').textContent='Usuario o contraseña incorrectos.';return;}
+  if(m.role!=='admin'){document.getElementById('lerr').textContent='Esta app es solo para administrador.';return;}
+  CU=m;localStorage.setItem('ab_sess',JSON.stringify(m));
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('ubadge').textContent=m.name.toUpperCase();
+  initApp();
+}
+function doLogout(){if(!confirm('¿Cerrar sesión?'))return;localStorage.removeItem('ab_sess');location.reload();}
+function checkSess(){try{const s=JSON.parse(localStorage.getItem('ab_sess'));if(s&&s.role==='admin'){CU=s;document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('ubadge').textContent=s.name.toUpperCase();initApp();}}catch(e){}}
+
+/* STATE */
+const KEY='ab_v4';
+const PRODS={gel:'Gel Desengrasador',cera:'Cera Smart Wax'};
+const CL={frasco:'Frasco',tapa:'Tapa',etiqueta:'Etiqueta'};
+const DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const PV_DATA={normal:{label:'En persona ₡6k',price:6000,ganancia:2500},descuento:{label:'Descuento ₡5k',price:5000,ganancia:1500},internet:{label:'Internet ₡8k',price:8000,ganancia:4000}};
+function defState(){return {"inv": {"gel": {"recibido": 0, "entregado": 0}, "cera": {"recibido": 0, "entregado": 0}}, "empleados": [{"id": 1000003, "name": "Allison", "role": "Vendedora", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}, {"id": 1000002, "name": "Jordán", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}], "vp": [], "log": [], "semanas": [], "cfg": {"md": 10}};}
+function loadL(){try{return JSON.parse(localStorage.getItem(KEY))||defState();}catch(e){return defState();}}
+function saveL(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+let S=loadL();
+
+/* SYNC */
+function setSS(st){
+  const d=document.getElementById('sdot'),l=document.getElementById('slbl');if(!d)return;
+  const c={ok:'var(--green)',syncing:'var(--gold)',offline:'var(--red)'};
+  const lb={ok:'Sincronizado ☁',syncing:'Guardando...',offline:'Sin conexión'};
+  d.style.background=c[st];if(l)l.textContent=lb[st];
+}
+async function saveCloud(s){setSS('syncing');try{await sbUp('sistema',[{id:'main',data:s,updated_at:new Date().toISOString()}]);setSS('ok');}catch(e){setSS('offline');}}
+function save(s){saveL(s);saveCloud(s);bcnt++;if(bcnt>=5){autoBackup();bcnt=0;}}
+async function loadCloud(){try{const r=await sbGet('sistema','?id=eq.main');if(r&&r.length>0&&r[0].data&&Object.keys(r[0].data).length>0){S=r[0].data;saveL(S);return true;}}catch(e){}return false;}
+
+/* BACKUP */
+let bcnt=0;
+function autoBackup(){dlBackup(false);}
+function dlBackup(manual=true){
+  try{
+    const b=new Blob([JSON.stringify({_meta:{app:'Abasha Admin',ts:new Date().toISOString()},data:S},null,2)],{type:'application/json'});
+    const a=document.createElement('a');const st=new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+    a.href=URL.createObjectURL(b);a.download=`abasha-admin-${st}.json`;
+    document.body.appendChild(a);a.click();a.remove();
+    document.getElementById('bdot').style.background='var(--green)';
+    document.getElementById('btxt').textContent='Respaldo: '+new Date().toLocaleString('es-CR');
+    if(manual)toast('Respaldo descargado');
+  }catch(e){if(manual)toast('Error en respaldo','error');}
+}
+function restoreB(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=e=>{
+    try{const p=JSON.parse(e.target.result);const nd=p.data||p;
+      if(!nd.inv){toast('Archivo no válido','error');return;}
+      if(!confirm('¿Reemplazar datos con este respaldo?'))return;
+      S=nd;save(S);renderAll();toast('Datos restaurados');
+    }catch(e){toast('Error al leer archivo','error');}
+  };r.readAsText(f);ev.target.value='';
+}
+function resetAll(){
+  if(!confirm('⚠️ ¿Querés hacer un respaldo antes?'))dlBackup();
+  if(!confirm('¿BORRAR TODOS LOS DATOS y empezar desde cero?'))return;
+  S=defState();save(S);renderAll();toast('Sistema reiniciado','info');
+}
+
+/* UTILS */
+function ts(){return new Date().toLocaleString('es-CR',{hour12:false});}
+function fmt(n){return '₡'+Math.round(n).toLocaleString('es-CR');}
+function addLog(msg,c='blue'){S.log.unshift({msg,c,time:ts()});if(S.log.length>300)S.log=S.log.slice(0,300);}
+function disponible(p){const i=S.inv[p];return (i.recibido||0)-(i.entregado||0);}
+function calcSal(v){if(v>=180)return 250000;if(v>=60)return 100000;return 0;}
+function toast(msg,type='success'){const d=document.createElement('div');d.className='toast-item '+type;d.textContent=msg;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3500);}
+function openM(id){document.getElementById(id).classList.add('open');popSelects();renderCsemPrev();}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');if(btn)btn.classList.add('active');
+  renderAll();
+}
+function showIt(id,btn){
+  document.querySelectorAll('.ipane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.itab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');
+}
+
+/* INVENTARIO — modelo simple: te dan producto terminado, vos lo entregás */
+function recibirStock(prod){
+  const qty=parseInt(document.getElementById(prod+'-recv-qty').value)||0;
+  if(qty<=0){toast('Cantidad inválida','error');return;}
+  S.inv[prod].recibido=(S.inv[prod].recibido||0)+qty;
+  addLog(`+${qty} ${PRODS[prod]} recibidos`,'blue');save(S);
+  document.getElementById(prod+'-recv-qty').value='';
+  renderAll();toast(`+${qty} ${PRODS[prod]} registrados`);
+}
+
+/* VENTAS PERSONALES */
+function upPVP(){
+  const canal=document.getElementById('pvcanal')?.value;
+  const qty=parseInt(document.getElementById('pvqty')?.value)||0;
+  const el=document.getElementById('pvprev');if(!el)return;if(!qty){el.innerHTML='';return;}
+  const cd=PV_DATA[canal];
+  el.innerHTML=`<div class="pbox"><div class="ptitle">Resumen</div>
+    <div class="prow"><span class="lbl">Precio</span><span>${fmt(cd.price)}</span></div>
+    <div class="prow"><span class="lbl">Unidades</span><span>${qty}</span></div>
+    <div class="prow"><span class="lbl">Ganancia total</span><span style="color:var(--green)">${fmt(cd.ganancia*qty)}</span></div>
+  </div>`;
+}
+function regVentaPersonal(){
+  const prod=document.getElementById('pvprod').value;
+  const canal=document.getElementById('pvcanal').value;
+  const qty=parseInt(document.getElementById('pvqty').value)||0;
+  if(qty<=0){toast('Cantidad inválida','error');return;}
+  const cd=PV_DATA[canal];
+  if(!S.vp)S.vp=[];
+  S.vp.unshift({fecha:ts(),prod,prodName:PRODS[prod],canal,canalLabel:cd.label,price:cd.price,ganancia:cd.ganancia,qty,total:cd.ganancia*qty});
+  addLog(`Venta personal: ${qty}× ${PRODS[prod]} vía ${cd.label}`,'blue');
+  save(S);renderAll();
+  document.getElementById('pvqty').value='1';document.getElementById('pvprev').innerHTML='';
+  toast(`Venta registrada: ${fmt(cd.ganancia*qty)} de ganancia`);
+}
+
+/* EMPLEADOS */
+function popSelects(){
+  ['esel','lsel'].forEach(id=>{const s=document.getElementById(id);if(!s)return;
+    s.innerHTML=(S.empleados||[]).filter(e=>e.active).map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  });
+}
+function addEmp(){
+  const name=document.getElementById('en').value.trim();
+  const zona=document.getElementById('ez').value.trim();
+  if(!name){toast('Ingresá el nombre','error');return;}
+  if(!S.empleados)S.empleados=[];
+  S.empleados.push({id:Date.now(),name,role:zona||'Vendedor',entregado:0,vendidoSemana:0,devuelto:0,histDiario:[],active:true});
+  addLog(`Nuevo empleado: ${name}`,'gold');save(S);
+  document.getElementById('en').value='';document.getElementById('ez').value='';
+  closeM('m-aemp');renderAll();toast(`${name} agregado`);
+}
+function entregarProd(){
+  const eid=parseInt(document.getElementById('esel').value);
+  const prod=document.getElementById('eprod').value;
+  const qty=parseInt(document.getElementById('eqty').value)||0;
+  if(qty<=0||qty>25){toast('Máximo 25 unidades','error');return;}
+  const disp=disponible(prod);
+  if(qty>disp){toast(`Solo tenés ${disp} unidades disponibles de ${PRODS[prod]}`,'error');return;}
+  const emp=S.empleados.find(e=>e.id===eid);if(!emp){toast('No encontrado','error');return;}
+  emp.entregado+=qty;
+  S.inv[prod].entregado=(S.inv[prod].entregado||0)+qty;
+  emp.histDiario.push({fecha:ts(),prod,qty,tipo:'entrega'});
+  addLog(`Entrega: ${qty}× ${PRODS[prod]} a ${emp.name}`,'blue');save(S);
+  closeM('m-ent');renderAll();toast(`${qty} unidades entregadas a ${emp.name}`);
+}
+function upLiqPrev(){
+  const eid=parseInt(document.getElementById('lsel').value);
+  const dev=parseInt(document.getElementById('ldev').value)||0;
+  const emp=S.empleados?.find(e=>e.id===eid);if(!emp)return;
+  const v=Math.max(0,emp.entregado-dev);
+  document.getElementById('lprev').innerHTML=`<div class="pbox"><div class="ptitle">Resumen</div>
+    <div class="prow"><span class="lbl">Entregado</span><span>${emp.entregado}</span></div>
+    <div class="prow"><span class="lbl">Devuelto</span><span style="color:var(--red)">${dev}</span></div>
+    <div class="prow"><span class="lbl">Vendido hoy</span><span style="color:var(--green)">${v}</span></div>
+    <div class="prow"><span class="lbl">Total semana</span><span>${emp.vendidoSemana+v}</span></div>
+    <div class="prow"><span class="lbl">Salario proyectado</span><span style="color:var(--gold)">${fmt(calcSal(emp.vendidoSemana+v))}</span></div>
+  </div>`;
+}
+function liquidar(){
+  const eid=parseInt(document.getElementById('lsel').value);
+  const dev=parseInt(document.getElementById('ldev').value)||0;
+  const emp=S.empleados?.find(e=>e.id===eid);if(!emp){toast('No encontrado','error');return;}
+  const v=Math.max(0,emp.entregado-dev);
+  emp.devuelto+=dev;emp.vendidoSemana+=v;
+  emp.histDiario.push({fecha:ts(),tipo:'liquidacion',vendido:v,devuelto:dev});
+  emp.entregado=0;addLog(`Liquidación ${emp.name}: vendió ${v}, devolvió ${dev}`,'gold');save(S);
+  closeM('m-liq');renderAll();toast(`${emp.name} vendió ${v} hoy`);
+}
+function renderCsemPrev(){
+  const el=document.getElementById('csemprev');if(!el)return;
+  const emps=S.empleados||[];
+  if(!emps.length){el.innerHTML='<div style="color:var(--dim2);font-size:13px;">Sin empleados.</div>';return;}
+  el.innerHTML='<div class="pbox"><div class="ptitle">Resumen de la semana</div>'+
+    emps.map(e=>`<div class="prow"><span class="lbl">${e.name}</span><span>${e.vendidoSemana} uds · <span style="color:var(--gold)">${fmt(calcSal(e.vendidoSemana))}</span></span></div>`).join('')+
+    '</div>';
+}
+function cerrarSemana(){
+  const res=(S.empleados||[]).map(e=>{return{name:e.name,vendido:e.vendidoSemana,salario:calcSal(e.vendidoSemana)}});
+  if(!S.semanas)S.semanas=[];
+  S.semanas.push({fecha:ts(),empleados:res});
+  S.empleados.forEach(e=>{e.vendidoSemana=0;e.devuelto=0;e.histDiario=[];});
+  addLog('Semana cerrada y archivada','gold');save(S);
+  closeM('m-csem');renderAll();toast('Semana cerrada correctamente');
+}
+
+/* USUARIOS */
+function createUser(){
+  const n=document.getElementById('unn').value.trim();
+  const u=document.getElementById('unu').value.trim();
+  const p=document.getElementById('unp').value;
+  const r=document.getElementById('unr').value;
+  if(!n||!u||!p){toast('Completá todos los campos','error');return;}
+  const users=getU();if(users.find(x=>x.username===u)){toast('Usuario ya existe','error');return;}
+  users.push({username:u,password:p,role:r,name:n});setU(users);
+  document.getElementById('unn').value='';document.getElementById('unu').value='';document.getElementById('unp').value='';
+  closeM('m-auser');renderUsers();toast(`Usuario ${n} creado`);
+}
+function deleteUser(u){
+  if(u==='admin'){toast('No se puede borrar el admin','error');return;}
+  if(!confirm(`¿Borrar usuario ${u}?`))return;
+  setU(getU().filter(x=>x.username!==u));renderUsers();toast('Usuario eliminado');
+}
+function saveCfg(){
+  const pct=parseFloat(document.getElementById('cfgmd')?.value)||0;
+  if(!S.cfg)S.cfg={};S.cfg.md=pct;save(S);renderCfgRes();
+}
+function renderCfgRes(){
+  const pct=S.cfg?.md||0;const el=document.getElementById('cfgres');if(!el)return;
+  const ch=[{l:'Gasolinera/Empleados',b:2500},{l:'Internet',b:4000},{l:'Personal ₡6k',b:2500},{l:'Personal ₡5k',b:1500}];
+  el.innerHTML=ch.map(c=>{const md=Math.round(c.b*pct/100);const n=c.b-md;
+    return `<div class="prow"><span class="lbl">${c.l}</span><span>Mano: ${fmt(md)} · <strong style="color:var(--green)">${fmt(n)}</strong></span></div>`;
+  }).join('');
+}
+
+/* RENDER */
+function renderDash(){
+  let al='';
+  ['gel','cera'].forEach(p=>{const d=disponible(p);
+    if(d===0)al+=`<div class="alert danger"><span>⚠</span>Sin stock disponible de ${PRODS[p]} — pedí más</div>`;
+    else if(d<15)al+=`<div class="alert warn"><span>!</span>Stock bajo de ${PRODS[p]} — solo ${d} disponibles</div>`;
+  });
+  const da=document.getElementById('da');if(da)da.innerHTML=al;
+
+  const tv=(S.empleados||[]).reduce((a,e)=>a+e.vendidoSemana,0);
+  const tpg=(S.vp||[]).reduce((a,v)=>a+v.total,0);
+  const ts2=(S.empleados||[]).reduce((a,e)=>a+calcSal(e.vendidoSemana),0);
+  const el=document.getElementById('dm');if(el)el.innerHTML=`
+    <div class="mc green"><div class="mc-label">Vendido semana (empleados)</div><div class="mc-val green">${tv}</div></div>
+    <div class="mc blue"><div class="mc-label">Ganancia personal</div><div class="mc-val blue">${fmt(tpg)}</div></div>
+    <div class="mc red"><div class="mc-label">Salarios proyectados</div><div class="mc-val red">${fmt(ts2)}</div></div>
+    <div class="mc gold"><div class="mc-label">Recibido total</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+  `;
+  const cc=document.getElementById('dc');if(cc)cc.innerHTML=`
+    <div class="canal-card personal"><div class="canal-name b">Personal</div><div class="canal-price" style="color:var(--blue)">₡6,000</div><div class="canal-sub">Ganás ₡2,500</div></div>
+    <div class="canal-card gasolinera"><div class="canal-name r">Gasolineras</div><div class="canal-price" style="color:var(--red)">₡6,000</div><div class="canal-sub">Socio cobra ₡3,500</div></div>
+    <div class="canal-card internet"><div class="canal-name g">Internet</div><div class="canal-price" style="color:var(--gold)">₡8,000</div><div class="canal-sub">Socio cobra ₡4,000</div></div>
+  `;
+  const tr=document.getElementById('dr');if(tr){
+    const s=[...(S.empleados||[])].sort((a,b)=>b.vendidoSemana-a.vendidoSemana).slice(0,5);
+    if(!s.length){tr.innerHTML='<div style="color:var(--dim2);font-size:13px;">Sin datos aún.</div>';}
+    else tr.innerHTML=s.map((e,i)=>{const ini=e.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      return `<div class="rank-item"><div class="rank-num" style="color:${i===0?'var(--gold)':i===1?'var(--dim)':'var(--dim2)'}">#${i+1}</div>
+        <div class="rank-avatar">${ini}</div><div class="rank-info"><div class="rank-name">${e.name}</div><div class="rank-sub">${e.role}</div></div>
+        <div class="rank-val">${e.vendidoSemana} uds</div></div>`;
+    }).join('');
+  }
+  const dd=DAYS.map(()=>0);
+  (S.empleados||[]).forEach(e=>{(e.histDiario||[]).filter(h=>h.tipo==='liquidacion').forEach(h=>{
+    const dw=new Date().getDay();dd[dw===0?6:dw-1]+=(h.vendido||0);
+  });});
+  const mx=Math.max(...dd,1);
+  const wb=document.getElementById('dwb');const wd=document.getElementById('dwd');
+  if(wb)wb.innerHTML=dd.map(v=>`<div class="wbar" style="height:${Math.max(3,Math.round(v/mx*62))}px"></div>`).join('');
+  if(wd)wd.innerHTML=DAYS.map(d=>`<div class="wday">${d}</div>`).join('');
+  const dl=document.getElementById('dl');if(dl){
+    if(!S.log.length){dl.innerHTML='<div style="color:var(--dim2);font-size:12px;">Sin movimientos.</div>';}
+    else dl.innerHTML=S.log.slice(0,18).map(l=>`<div class="log-item"><div class="log-dot" style="background:var(--${l.c||'blue'})"></div><div class="log-msg">${l.msg}</div><div class="log-time">${l.time}</div></div>`).join('');
+  }
+}
+
+function renderPers(){
+  const vp=S.vp||[];
+  const tg=vp.reduce((a,v)=>a+v.total,0);const tu=vp.reduce((a,v)=>a+v.qty,0);
+  const pm=document.getElementById('pm');if(pm)pm.innerHTML=`
+    <div class="mc blue"><div class="mc-label">Ganancia total personal</div><div class="mc-val blue">${fmt(tg)}</div></div>
+    <div class="mc green"><div class="mc-label">Unidades vendidas</div><div class="mc-val green">${tu}</div></div>
+    <div class="mc gold"><div class="mc-label">Promedio por unidad</div><div class="mc-val gold">${tu?fmt(tg/tu):'₡0'}</div></div>
+  `;
+  const pr=document.getElementById('pres');if(pr){
+    const byC={normal:0,descuento:0,internet:0};
+    vp.forEach(v=>{if(byC[v.canal]!==undefined)byC[v.canal]+=v.total;});
+    pr.innerHTML=`
+      <div class="prow"><span class="lbl">En persona (₡6k)</span><span style="color:var(--blue)">${fmt(byC.normal)}</span></div>
+      <div class="prow"><span class="lbl">Con descuento (₡5k)</span><span style="color:var(--dim)">${fmt(byC.descuento)}</span></div>
+      <div class="prow"><span class="lbl">Internet (₡8k)</span><span style="color:var(--gold)">${fmt(byC.internet)}</span></div>
+      <div class="prow"><span class="lbl">Total</span><span style="color:var(--green);font-size:15px;">${fmt(tg)}</span></div>
+    `;
+  }
+  const tbl=document.getElementById('pvtbl');if(tbl){
+    if(!vp.length){tbl.innerHTML='<tr><td colspan="6" style="color:var(--dim2);text-align:center;padding:14px;">Sin ventas aún.</td></tr>';return;}
+    tbl.innerHTML=vp.slice(0,50).map(v=>`<tr><td>${v.fecha}</td><td>${v.prodName}</td><td>${v.canalLabel}</td><td class="td-n">${fmt(v.price)}</td><td class="td-n">${v.qty}</td><td class="td-n td-gr">${fmt(v.total)}</td></tr>`).join('');
+  }
+}
+
+function renderInv(){
+  let al='';['gel','cera'].forEach(p=>{const d=disponible(p);
+    if(d===0)al+=`<div class="alert danger"><span>⚠</span>Sin stock disponible de ${PRODS[p]}</div>`;
+    else if(d<15)al+=`<div class="alert warn"><span>!</span>Stock bajo de ${PRODS[p]} — ${d} disponibles</div>`;
+  });
+  const ia=document.getElementById('ia');if(ia)ia.innerHTML=al;
+  const im=document.getElementById('im');if(im)im.innerHTML=`
+    <div class="mc blue"><div class="mc-label">Gel disponible</div><div class="mc-val blue">${disponible('gel')}</div></div>
+    <div class="mc red"><div class="mc-label">Cera disponible</div><div class="mc-val red">${disponible('cera')}</div></div>
+    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+    <div class="mc green"><div class="mc-label">Total entregado</div><div class="mc-val green">${(S.inv.gel.entregado||0)+(S.inv.cera.entregado||0)}</div></div>
+  `;
+  ['gel','cera'].forEach(p=>{
+    const i=S.inv[p];
+    const d=document.getElementById(p+'-disp');if(d)d.textContent=disponible(p);
+    const r=document.getElementById(p+'-recibido');if(r)r.textContent=i.recibido||0;
+    const e=document.getElementById(p+'-entregado');if(e)e.textContent=i.entregado||0;
+  });
+  const il=document.getElementById('ilog');if(il){
+    if(!S.log.length){il.innerHTML='<div style="color:var(--dim2);font-size:12px;padding:8px;">Sin movimientos.</div>';return;}
+    il.innerHTML=S.log.slice(0,28).map(l=>`<div class="log-item"><div class="log-dot" style="background:var(--${l.c||'blue'})"></div><div class="log-msg">${l.msg}</div><div class="log-time">${l.time}</div></div>`).join('');
+  }
+}
+
+/* SOLO JORDÁN Y ALLISON */
+function fixEmps(){
+  if(!S.empleados)S.empleados=[];
+  const antes=S.empleados.length;
+  S.empleados=S.empleados.filter(e=>e.name!=='Osman');
+  let cambio=S.empleados.length!==antes;
+  [[1000002,'Jordán','Vendedor'],[1000003,'Allison','Vendedora']].forEach(d=>{
+    if(!S.empleados.some(e=>e.name===d[1])){
+      S.empleados.push({id:d[0],name:d[1],role:d[2],entregado:0,vendidoSemana:0,devuelto:0,recordSemana:0,histDiario:[],active:true});
+      cambio=true;
+    }
+  });
+  return cambio;
+}
+function renderEmps(){
+  const el=document.getElementById('empgrid');if(!el)return;
+  const emps=S.empleados||[];
+  if(!emps.length){el.innerHTML='<div style="color:var(--dim2);font-size:13px;">Sin empleados aún. Agregá el primero.</div>';return;}
+  el.innerHTML=emps.map(e=>{
+    const sal=calcSal(e.vendidoSemana);const ini=e.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const pct=Math.min(100,Math.round((e.vendidoSemana/60)*100));
+    return `<div class="emp-card"><div class="emp-avatar">${ini}</div>
+      <div class="emp-name">${e.name}</div><div class="emp-role">${e.role}</div>
+      <div class="emp-row"><span class="l">Vendido semana</span><span class="v" style="color:var(--green)">${e.vendidoSemana}</span></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div class="emp-row"><span class="l">Meta semanal</span><span class="v" style="color:var(--dim2)">${pct}% (60 uds)</span></div>
+      <div class="emp-row"><span class="l">Entregado hoy</span><span class="v">${e.entregado}</span></div>
+      <div class="emp-row"><span class="l">Devuelto acum.</span><span class="v" style="color:var(--red)">${e.devuelto}</span></div>
+      <div class="emp-sal"><div class="emp-sal-lbl">Salario proyectado</div><div class="emp-sal-val">${fmt(sal)}</div></div>
+    </div>`;
+  }).join('');
+}
+
+/* GANANCIA POR EMPLEADO — modelo fijo: ₡3,500 socio / ₡1,667 empleado / ₡833 tuyo, por unidad a ₡6,000 */
+const PRECIO_UNIT=6000, PAGO_SOCIO_UNIT=3500, PAGO_EMP_UNIT=1667, GANANCIA_TUYA_UNIT=PRECIO_UNIT-PAGO_SOCIO_UNIT-PAGO_EMP_UNIT; // 833
+function renderRGE(){
+  const emps=S.empleados||[];
+  const totalUnidades=emps.reduce((a,e)=>a+(e.vendidoSemana||0),0);
+  const totalSocio=totalUnidades*PAGO_SOCIO_UNIT;
+  const totalEmp=totalUnidades*PAGO_EMP_UNIT;
+  const totalTuyo=totalUnidades*GANANCIA_TUYA_UNIT;
+
+  const rm=document.getElementById('rge-metrics');
+  if(rm)rm.innerHTML=`
+    <div class="mc green"><div class="mc-label">Tu ganancia total semana</div><div class="mc-val green">${fmt(totalTuyo)}</div></div>
+    <div class="mc blue"><div class="mc-label">Unidades vendidas (equipo)</div><div class="mc-val blue">${totalUnidades}</div></div>
+    <div class="mc red"><div class="mc-label">Pago total a socio</div><div class="mc-val red">${fmt(totalSocio)}</div></div>
+    <div class="mc gold"><div class="mc-label">Pago total a empleados</div><div class="mc-val gold">${fmt(totalEmp)}</div></div>
+  `;
+
+  const rt=document.getElementById('rge-tbl');
+  if(rt){
+    if(!emps.length){rt.innerHTML='<tr><td colspan="5" style="color:var(--dim2);text-align:center;padding:14px;">Sin empleados aún.</td></tr>';}
+    else rt.innerHTML=emps.map(e=>{
+      const u=e.vendidoSemana||0;
+      const socio=u*PAGO_SOCIO_UNIT, salEmp=u*PAGO_EMP_UNIT, tuyo=u*GANANCIA_TUYA_UNIT;
+      return `<tr><td>${e.name}</td><td class="td-n">${u}</td><td class="td-n td-r">${fmt(socio)}</td><td class="td-n td-g">${fmt(salEmp)}</td><td class="td-n td-gr">${fmt(tuyo)}</td></tr>`;
+    }).join('')+`<tr style="border-top:1px solid rgba(255,255,255,.1);"><td class="td-n">TOTAL</td><td class="td-n">${totalUnidades}</td><td class="td-n td-r">${fmt(totalSocio)}</td><td class="td-n td-g">${fmt(totalEmp)}</td><td class="td-n td-gr" style="font-size:15px;">${fmt(totalTuyo)}</td></tr>`;
+  }
+
+  const rd=document.getElementById('rge-desglose');
+  if(rd)rd.innerHTML=`
+    <div class="prow"><span class="lbl">Precio de venta al cliente</span><span>${fmt(PRECIO_UNIT)}</span></div>
+    <div class="prow"><span class="lbl">Pago a tu socio (costo producto)</span><span style="color:var(--red)">-${fmt(PAGO_SOCIO_UNIT)}</span></div>
+    <div class="prow"><span class="lbl">Pago al empleado (su salario)</span><span style="color:var(--gold)">-${fmt(PAGO_EMP_UNIT)}</span></div>
+    <div class="prow"><span class="lbl">Tu ganancia por unidad</span><span style="color:var(--green);font-size:15px;">${fmt(GANANCIA_TUYA_UNIT)}</span></div>
+    <div class="sep"></div>
+    <div class="prow"><span class="lbl">Equivalente cada 60 unidades</span><span style="color:var(--green);font-weight:700;">${fmt(GANANCIA_TUYA_UNIT*60)}</span></div>
+  `;
+}
+
+function renderRep(){
+  const emps=S.empleados||[];const vp=S.vp||[];
+  const tv=emps.reduce((a,e)=>a+e.vendidoSemana,0);
+  const tpg=vp.reduce((a,v)=>a+v.total,0);
+  const ts2=emps.reduce((a,e)=>a+calcSal(e.vendidoSemana),0);
+  const rm=document.getElementById('rmet');if(rm)rm.innerHTML=`
+    <div class="mc green"><div class="mc-label">Vendido (empleados)</div><div class="mc-val green">${tv}</div></div>
+    <div class="mc blue"><div class="mc-label">Ganancia personal</div><div class="mc-val blue">${fmt(tpg)}</div></div>
+    <div class="mc red"><div class="mc-label">Salarios semana</div><div class="mc-val red">${fmt(ts2)}</div></div>
+    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+  `;
+  const pct=S.cfg?.md||0;
+  const rcb=document.getElementById('rcb');if(rcb){
+    const items=[
+      {l:'Gasolinera/Empleados',u:tv,b:2500,c:3500},
+      {l:'Personal ₡6k',u:vp.filter(v=>v.canal==='normal').reduce((a,v)=>a+v.qty,0),b:2500,c:0},
+      {l:'Descuento ₡5k',u:vp.filter(v=>v.canal==='descuento').reduce((a,v)=>a+v.qty,0),b:1500,c:0},
+      {l:'Internet ₡8k',u:vp.filter(v=>v.canal==='internet').reduce((a,v)=>a+v.qty,0),b:4000,c:4000},
+    ];
+    rcb.innerHTML=items.map(it=>{const md=Math.round(it.b*pct/100);const n=it.b-md;
+      return `<div class="prow"><span class="lbl">${it.l} (${it.u} uds)</span><span style="color:var(--green)">${fmt(n*it.u)} neto</span></div>`;
+    }).join('');
+  }
+  const rct=document.getElementById('rctbl');if(rct){
+    const items=[
+      {l:'Gasolinera/Empleados',u:tv,p:6000,cs:3500},
+      {l:'Personal',u:vp.filter(v=>v.canal==='normal').reduce((a,v)=>a+v.qty,0),p:6000,cs:0},
+      {l:'Descuento',u:vp.filter(v=>v.canal==='descuento').reduce((a,v)=>a+v.qty,0),p:5000,cs:0},
+      {l:'Internet',u:vp.filter(v=>v.canal==='internet').reduce((a,v)=>a+v.qty,0),p:8000,cs:4000},
+    ];
+    rct.innerHTML=items.map(it=>{const ing=it.u*it.p;const cos=it.u*it.cs;const gan=ing-cos;
+      return `<tr><td>${it.l}</td><td class="td-n">${it.u}</td><td class="td-n td-b">${fmt(ing)}</td><td class="td-n td-r">${fmt(cos)}</td><td class="td-n td-gr">${fmt(gan)}</td></tr>`;
+    }).join('');
+  }
+  const ret=document.getElementById('retbl');if(ret){
+    if(!emps.length){ret.innerHTML='<tr><td colspan="6" style="color:var(--dim2);text-align:center;padding:14px;">Sin empleados.</td></tr>';return;}
+    ret.innerHTML=emps.map(e=>`<tr><td>${e.name}</td><td class="td-n td-b">${e.entregado+e.vendidoSemana}</td><td class="td-n td-gr">${e.vendidoSemana}</td><td class="td-n td-r">${e.devuelto}</td><td class="td-n ${e.entregado>0?'td-g':''}">${e.entregado}</td><td class="td-n td-g">${fmt(calcSal(e.vendidoSemana))}</td></tr>`).join('');
+  }
+  const rit=document.getElementById('ritbl');if(rit){
+    const rows=[];['gel','cera'].forEach(p=>{const i=S.inv[p];const d=disponible(p);const cls=d===0?'td-r':d<15?'td-g':'td-gr';
+      rows.push(`<tr><td>${PRODS[p]}</td><td>Recibido</td><td class="td-n">${i.recibido||0}</td><td>—</td></tr>`);
+      rows.push(`<tr><td>${PRODS[p]}</td><td>Entregado</td><td class="td-n">${i.entregado||0}</td><td>—</td></tr>`);
+      rows.push(`<tr><td>${PRODS[p]}</td><td>Disponible</td><td class="td-n ${cls}">${d}</td><td class="${cls}">${d===0?'Sin stock':d<15?'Bajo':'OK'}</td></tr>`);
+    });rit.innerHTML=rows.join('');
+  }
+  const rim=document.getElementById('rimet');if(rim)rim.innerHTML=`
+    <div class="mc blue"><div class="mc-label">Gel disponible</div><div class="mc-val blue">${disponible('gel')}</div></div>
+    <div class="mc red"><div class="mc-label">Cera disponible</div><div class="mc-val red">${disponible('cera')}</div></div>
+    <div class="mc gold"><div class="mc-label">Gel recibido total</div><div class="mc-val gold">${S.inv.gel.recibido||0}</div></div>
+    <div class="mc green"><div class="mc-label">Cera recibida total</div><div class="mc-val green">${S.inv.cera.recibido||0}</div></div>
+  `;
+}
+
+function renderUsers(){
+  const el=document.getElementById('usrlst');if(!el)return;
+  const users=getU();const rc={admin:'admin',socio:'socio',mano:'mano',empleado:'emp'};
+  const rl={admin:'Administrador',socio:'Socio',mano:'Mano Derecha',empleado:'Empleado Vendedor'};
+  el.innerHTML=users.map(u=>`<div class="user-card">
+    <div class="user-icon ${rc[u.role]||'emp'}">${u.name[0].toUpperCase()}</div>
+    <div class="user-info"><div class="user-name">${u.name}</div><div class="user-role-lbl">${u.username} · ${rl[u.role]||u.role}</div></div>
+    ${u.username!=='admin'?`<button class="bsm danger" onclick="deleteUser('${u.username}')">Eliminar</button>`:''}
+  </div>`).join('');
+  const cfgmd=document.getElementById('cfgmd');if(cfgmd)cfgmd.value=S.cfg?.md||10;
+  renderCfgRes();
+}
+
+function renderAll(){
+  renderDash();renderPers();renderInv();renderEmps();renderRep();renderRGE();renderUsers();
+}
+
+/* INIT */
+async function initApp(){
+  setSS('syncing');
+  const loaded=await loadCloud();
+  S=loadL();if(fixEmps())save(S);renderAll();
+  if(loaded){setSS('ok');toast('Datos sincronizados ☁','info');}
+  else setSS('offline');
+  setInterval(async()=>{
+    try{
+      const rows=await sbGet('sistema','?id=eq.main');
+      if(rows&&rows.length>0&&rows[0].data){
+        const rs=JSON.stringify(rows[0].data);const ls=JSON.stringify(S);
+        if(rs!==ls){S=rows[0].data;fixEmps();saveL(S);renderAll();setSS('ok');}
+      }
+    }catch(e){setSS('offline');}
+  },30000);
+}
+checkSess();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>
