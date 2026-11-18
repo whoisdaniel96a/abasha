@@ -423,35 +423,51 @@ const LOGROS_DEF=[
   {id:'l8',icon:'🏦',name:'Ahorrador',desc:'Creaste tu primera meta financiera',req:1,tipo:'metas'},
 ];
 
-let S=null, LOCAL=null, myEmpId=null, selPrecio=null, qty=1;
+let S=null, SOC=null, LOCAL=null, myEmpId=null, selPrecio=null, qty=1;
 const LKEY='ab_emp_v3';
 function loadL(){try{return JSON.parse(localStorage.getItem(LKEY))||{metas:[],ventasLocales:[]};}catch(e){return{metas:[],ventasLocales:[]};}}
 function saveL(d){localStorage.setItem(LKEY,JSON.stringify(d));}
 
+/* EQUIPOS: dueño (fila main) y socio (fila socio) */
+function TEAM(){return localStorage.getItem('ab_my_team')==='socio'?'socio':'dueno';}
+function teamData(){return TEAM()==='socio'?SOC:S;}
+function defSoc(){return {"inv": {"gel": {"ingreso": 0, "aDueno": 0, "aEmp": 0}, "cera": {"ingreso": 0, "aDueno": 0, "aEmp": 0}}, "empleados": [{"id": 2000001, "name": "Pablo", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}, {"id": 2000002, "name": "Moisés", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}], "entregasDueno": [], "log": [], "semanas": []};}
+async function syncTeam(){
+  const soc=TEAM()==='socio';
+  const cl=await getCloud(soc?'socio':'main');
+  if(cl===false)return false;
+  if(cl&&cl.empleados&&cl.empleados.length){if(soc)SOC=cl;else S=cl;}
+  return true;
+}
+
 /* SYNC */
 function setSS(st){const d=document.getElementById('sdot');if(!d)return;const c={ok:'var(--green)',syncing:'var(--gold)',offline:'var(--red)'};d.style.background=c[st]||c.offline;}
-async function getCloud(){
-  try{const r=await fetch(SBU+'/rest/v1/sistema?id=eq.main',{headers:SBH});if(r.ok){const d=await r.json();if(d&&d.length>0&&d[0].data)return d[0].data;}  }catch(e){}return null;
+async function getCloud(id){
+  try{const r=await fetch(SBU+'/rest/v1/sistema?id=eq.'+(id||'main'),{headers:SBH});if(!r.ok)return false;const d=await r.json();if(d&&d.length>0&&d[0].data&&Object.keys(d[0].data).length)return d[0].data;return null;}catch(e){return false;}
 }
 async function saveCloud(){
   setSS('syncing');
-  try{await fetch(SBU+'/rest/v1/sistema',{method:'POST',headers:Object.assign({},SBH,{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{id:'main',data:S,updated_at:new Date().toISOString()}])});setSS('ok');}
+  try{await fetch(SBU+'/rest/v1/sistema',{method:'POST',headers:Object.assign({},SBH,{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{id:(TEAM()==='socio'?'socio':'main'),data:(TEAM()==='socio'?SOC:S),updated_at:new Date().toISOString()}])});setSS('ok');}
   catch(e){setSS('offline');}
 }
 
 /* WHO */
 function populateWho(){
   const sel=document.getElementById('who-sel');if(!sel)return;
-  const emps=getEmps();
-  if(!emps.length){sel.innerHTML='<option value="">No hay vendedores creados aún</option>';return;}
-  sel.innerHTML='<option value="">Seleccioná tu nombre...</option>'+emps.map(e=>'<option value="'+e.id+'">'+e.name+'</option>').join('');
+  const d=((S&&S.empleados)||[]).filter(function(e){return e.name!=='Osman';}).map(function(e){return {v:'d:'+e.id,n:e.name};});
+  const s=((SOC&&SOC.empleados)||[]).map(function(e){return {v:'s:'+e.id,n:e.name};});
+  const all=d.concat(s);
+  if(!all.length){sel.innerHTML='<option value="">No hay vendedores creados aún</option>';return;}
+  sel.innerHTML='<option value="">Seleccioná tu nombre...</option>'+all.map(function(o){return '<option value="'+o.v+'">'+o.n+'</option>';}).join('');
   const saved=localStorage.getItem('ab_my_id');
-  if(saved)sel.value=saved;
+  if(saved)sel.value=(TEAM()==='socio'?'s:':'d:')+saved;
 }
 function selectWho(){
   const v=document.getElementById('who-sel').value;
   if(!v){document.getElementById('who-err').textContent='Seleccioná tu nombre.';return;}
-  localStorage.setItem('ab_my_id',v);myEmpId=v;
+  const parts=v.split(':');
+  localStorage.setItem('ab_my_team',parts[0]==='s'?'socio':'dueno');
+  localStorage.setItem('ab_my_id',parts[1]);myEmpId=parts[1];
   const emp=getMyEmp();
   document.getElementById('who-screen').style.display='none';
   document.getElementById('tuser').textContent=emp?emp.name.split(' ')[0].toUpperCase():'VEND';
@@ -460,7 +476,7 @@ function selectWho(){
 function cambiarVendedor(){document.getElementById('who-screen').style.display='flex';populateWho();}
 
 /* MY EMP */
-function getEmps(){return((S&&S.empleados)||[]).filter(function(e){return e.name!=='Osman';});}
+function getEmps(){return(((teamData()||{}).empleados)||[]).filter(function(e){return e.name!=='Osman';});}
 function getMyEmp(){
   const id=myEmpId||localStorage.getItem('ab_my_id');
   if(!id)return getEmps()[0]||null;
@@ -468,7 +484,7 @@ function getMyEmp(){
 }
 function getTotalHist(){
   const e=getMyEmp();if(!e)return 0;
-  const ant=(S&&S.semanas||[]).reduce((a,sem)=>{const m=(sem.empleados||[]).find(x=>x.name===e.name);return a+(m?m.vendido||0:0);},0);
+  const ant=((teamData()||{}).semanas||[]).reduce((a,sem)=>{const m=(sem.empleados||[]).find(x=>x.name===e.name);return a+(m?m.vendido||0:0);},0);
   return (e.vendidoSemana||0)+ant;
 }
 function getVentasHoy(){
@@ -667,6 +683,7 @@ function renderVentasHoy(){
 async function confirmarVenta(){
   const p=PRECIOS.find(x=>x.id===selPrecio);
   if(!p){toast('Seleccioná un tipo de venta primero','error');return;}
+  if(!(await syncTeam())){toast('Sin conexión. No se guardó, intentá de nuevo.','error');return;}
   const e=getMyEmp();
   if(!e){toast('No se encontró tu perfil. Avisale al admin.','error');return;}
 
@@ -676,8 +693,8 @@ async function confirmarVenta(){
   if(!e.histDiario)e.histDiario=[];
   e.histDiario.unshift({fecha:new Date().toLocaleString('es-CR',{hour12:false}),tipo:'liquidacion',vendido:totalUnits,devuelto:0});
   if((e.vendidoSemana)>(e.recordSemana||0))e.recordSemana=e.vendidoSemana;
-  if(!S.log)S.log=[];
-  S.log.unshift({msg:`${e.name} vendió ${totalUnits} uds (${p.title})`,c:'blue',time:new Date().toLocaleString('es-CR',{hour12:false})});
+  const D=teamData();if(!D.log)D.log=[];
+  D.log.unshift({msg:`${e.name} vendió ${totalUnits} uds (${p.title})`,c:'blue',time:new Date().toLocaleString('es-CR',{hour12:false})});
 
   if(!LOCAL.ventasLocales)LOCAL.ventasLocales=[];
   LOCAL.ventasLocales.unshift({tipo:p.title,id:p.id,units:totalUnits,qty,margin:totalMargin,price:p.price*qty,fecha:new Date().toLocaleDateString('es-CR'),fechaISO:new Date().toISOString()});
@@ -831,6 +848,8 @@ async function initApp(){
   setSS('syncing');
   const cloud=await getCloud();
   if(cloud&&cloud.empleados&&cloud.empleados.length){S=cloud;setSS('ok');}else{S={"inv": {"gel": {"recibido": 0, "entregado": 0}, "cera": {"recibido": 0, "entregado": 0}}, "empleados": [{"id": 1000003, "name": "Allison", "role": "Vendedora", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}, {"id": 1000002, "name": "Jordán", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}], "vp": [], "log": [], "semanas": [], "cfg": {"md": 10}};setSS('offline');toast('Sin conexión — usando datos locales','info');}
+  const cs=await getCloud('socio');
+  SOC=(cs&&cs.empleados&&cs.empleados.length)?cs:defSoc();
   populateWho();
   const saved=localStorage.getItem('ab_my_id');
   if(saved){
@@ -845,6 +864,8 @@ async function initApp(){
   setInterval(async()=>{
     const cloud=await getCloud();
     if(cloud&&cloud.empleados&&cloud.empleados.length&&JSON.stringify(cloud)!==JSON.stringify(S)){S=cloud;renderAll();setSS('ok');}
+    const cs2=await getCloud('socio');
+    if(cs2&&cs2.empleados&&cs2.empleados.length&&JSON.stringify(cs2)!==JSON.stringify(SOC)){SOC=cs2;renderAll();}
   },20000);
 }
 initApp();

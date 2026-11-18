@@ -599,7 +599,12 @@ function resetAll(){
 function ts(){return new Date().toLocaleString('es-CR',{hour12:false});}
 function fmt(n){return '₡'+Math.round(n).toLocaleString('es-CR');}
 function addLog(msg,c='blue'){S.log.unshift({msg,c,time:ts()});if(S.log.length>300)S.log=S.log.slice(0,300);}
-function disponible(p){const i=S.inv[p];return (i.recibido||0)-(i.entregado||0);}
+/* INVENTARIO MAYOR: lo que te entrega el socio entra solo a tu inventario */
+let SOC=null;
+async function loadSocio(){try{const r=await sbGet('sistema','?id=eq.socio');if(r&&r.length>0&&r[0].data&&Object.keys(r[0].data).length){SOC=r[0].data;}}catch(e){}}
+function recibidoSocio(p){return (SOC&&SOC.inv&&SOC.inv[p]&&SOC.inv[p].aDueno)||0;}
+function recib(p){return ((S.inv[p]&&S.inv[p].recibido)||0)+recibidoSocio(p);}
+function disponible(p){const i=S.inv[p];return recib(p)-(i.entregado||0);}
 function calcSal(v){if(v>=180)return 250000;if(v>=60)return 100000;return 0;}
 function toast(msg,type='success'){const d=document.createElement('div');d.className='toast-item '+type;d.textContent=msg;document.getElementById('toast').appendChild(d);setTimeout(()=>d.remove(),3500);}
 function openM(id){document.getElementById(id).classList.add('open');popSelects();renderCsemPrev();}
@@ -767,7 +772,7 @@ function renderDash(){
     <div class="mc green"><div class="mc-label">Vendido semana (empleados)</div><div class="mc-val green">${tv}</div></div>
     <div class="mc blue"><div class="mc-label">Ganancia personal</div><div class="mc-val blue">${fmt(tpg)}</div></div>
     <div class="mc red"><div class="mc-label">Salarios proyectados</div><div class="mc-val red">${fmt(ts2)}</div></div>
-    <div class="mc gold"><div class="mc-label">Recibido total</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+    <div class="mc gold"><div class="mc-label">Recibido total</div><div class="mc-val gold">${recib('gel')+recib('cera')}</div></div>
   `;
   const cc=document.getElementById('dc');if(cc)cc.innerHTML=`
     <div class="canal-card personal"><div class="canal-name b">Personal</div><div class="canal-price" style="color:var(--blue)">₡6,000</div><div class="canal-sub">Ganás ₡2,500</div></div>
@@ -830,13 +835,13 @@ function renderInv(){
   const im=document.getElementById('im');if(im)im.innerHTML=`
     <div class="mc blue"><div class="mc-label">Gel disponible</div><div class="mc-val blue">${disponible('gel')}</div></div>
     <div class="mc red"><div class="mc-label">Cera disponible</div><div class="mc-val red">${disponible('cera')}</div></div>
-    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${recib('gel')+recib('cera')}</div></div>
     <div class="mc green"><div class="mc-label">Total entregado</div><div class="mc-val green">${(S.inv.gel.entregado||0)+(S.inv.cera.entregado||0)}</div></div>
   `;
   ['gel','cera'].forEach(p=>{
     const i=S.inv[p];
     const d=document.getElementById(p+'-disp');if(d)d.textContent=disponible(p);
-    const r=document.getElementById(p+'-recibido');if(r)r.textContent=i.recibido||0;
+    const r=document.getElementById(p+'-recibido');if(r)r.textContent=recib(p);
     const e=document.getElementById(p+'-entregado');if(e)e.textContent=i.entregado||0;
   });
   const il=document.getElementById('ilog');if(il){
@@ -925,7 +930,7 @@ function renderRep(){
     <div class="mc green"><div class="mc-label">Vendido (empleados)</div><div class="mc-val green">${tv}</div></div>
     <div class="mc blue"><div class="mc-label">Ganancia personal</div><div class="mc-val blue">${fmt(tpg)}</div></div>
     <div class="mc red"><div class="mc-label">Salarios semana</div><div class="mc-val red">${fmt(ts2)}</div></div>
-    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${(S.inv.gel.recibido||0)+(S.inv.cera.recibido||0)}</div></div>
+    <div class="mc gold"><div class="mc-label">Total recibido</div><div class="mc-val gold">${recib('gel')+recib('cera')}</div></div>
   `;
   const pct=S.cfg?.md||0;
   const rcb=document.getElementById('rcb');if(rcb){
@@ -956,7 +961,7 @@ function renderRep(){
   }
   const rit=document.getElementById('ritbl');if(rit){
     const rows=[];['gel','cera'].forEach(p=>{const i=S.inv[p];const d=disponible(p);const cls=d===0?'td-r':d<15?'td-g':'td-gr';
-      rows.push(`<tr><td>${PRODS[p]}</td><td>Recibido</td><td class="td-n">${i.recibido||0}</td><td>—</td></tr>`);
+      rows.push(`<tr><td>${PRODS[p]}</td><td>Recibido</td><td class="td-n">${recib(p)}</td><td>—</td></tr>`);
       rows.push(`<tr><td>${PRODS[p]}</td><td>Entregado</td><td class="td-n">${i.entregado||0}</td><td>—</td></tr>`);
       rows.push(`<tr><td>${PRODS[p]}</td><td>Disponible</td><td class="td-n ${cls}">${d}</td><td class="${cls}">${d===0?'Sin stock':d<15?'Bajo':'OK'}</td></tr>`);
     });rit.innerHTML=rows.join('');
@@ -964,8 +969,8 @@ function renderRep(){
   const rim=document.getElementById('rimet');if(rim)rim.innerHTML=`
     <div class="mc blue"><div class="mc-label">Gel disponible</div><div class="mc-val blue">${disponible('gel')}</div></div>
     <div class="mc red"><div class="mc-label">Cera disponible</div><div class="mc-val red">${disponible('cera')}</div></div>
-    <div class="mc gold"><div class="mc-label">Gel recibido total</div><div class="mc-val gold">${S.inv.gel.recibido||0}</div></div>
-    <div class="mc green"><div class="mc-label">Cera recibida total</div><div class="mc-val green">${S.inv.cera.recibido||0}</div></div>
+    <div class="mc gold"><div class="mc-label">Gel recibido total</div><div class="mc-val gold">${recib('gel')}</div></div>
+    <div class="mc green"><div class="mc-label">Cera recibida total</div><div class="mc-val green">${recib('cera')}</div></div>
   `;
 }
 
@@ -990,11 +995,13 @@ function renderAll(){
 async function initApp(){
   setSS('syncing');
   const loaded=await loadCloud();
+  await loadSocio();
   S=loadL();if(fixEmps())save(S);renderAll();
   if(loaded){setSS('ok');toast('Datos sincronizados ☁','info');}
   else setSS('offline');
   setInterval(async()=>{
     try{
+      await loadSocio();renderInv();
       const rows=await sbGet('sistema','?id=eq.main');
       if(rows&&rows.length>0&&rows[0].data){
         const rs=JSON.stringify(rows[0].data);const ls=JSON.stringify(S);

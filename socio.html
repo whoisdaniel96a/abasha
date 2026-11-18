@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Abasha CR · Socio</title>
+<meta name="theme-color" content="#07090D">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest-socio.json">
+<link rel="icon" type="image/png" href="socio-192.png">
+<link rel="apple-touch-icon" href="socio-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090D;--bg2:#0C0F16;--bg3:#131820;--blue:#00BFFF;--red:#E8192C;--gold:#C8A84B;--green:#00E676;--purple:#A855F7;--white:#EEF2FF;--dim:rgba(238,242,255,.65);--dim2:rgba(238,242,255,.32);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--white);font-family:'Exo 2',sans-serif;min-height:100vh;max-width:560px;margin:0 auto;padding-bottom:84px;}
+input,select{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--white);font-family:'Exo 2';font-size:15px;padding:12px 13px;outline:none;margin-bottom:12px;}
+input:focus,select:focus{border-color:rgba(200,168,75,.5);}
+.flabel{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-bottom:5px;display:block;}
+.btn{font-family:'Rajdhani';font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:11px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--dim);cursor:pointer;}
+.btn.gold{background:rgba(200,168,75,.14);color:var(--gold);border-color:rgba(200,168,75,.35);}
+.btn.blue{background:rgba(0,191,255,.12);color:var(--blue);border-color:rgba(0,191,255,.3);}
+.btn.green{background:rgba(0,230,118,.1);color:var(--green);border-color:rgba(0,230,118,.25);}
+.btn.full{width:100%;}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* login */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;z-index:900;}
+.lbox{width:100%;max-width:340px;}
+.llogo{font-family:'Bebas Neue';font-size:42px;letter-spacing:.1em;text-align:center;}
+.llogo span{color:var(--gold);}
+.lsub{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--dim2);text-align:center;margin-bottom:28px;}
+.lcard{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;}
+.lerr{color:var(--red);font-size:13px;text-align:center;margin-top:10px;min-height:18px;}
+/* shell */
+#app{display:none;}
+.topbar{background:rgba(7,9,13,.97);border-bottom:1px solid rgba(255,255,255,.06);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tlogo{font-family:'Bebas Neue';font-size:17px;letter-spacing:.1em;}
+.tlogo span{color:var(--gold);}
+.tr{display:flex;align-items:center;gap:9px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+.slbl{font-family:'Rajdhani';font-size:10px;font-weight:700;color:var(--dim2);}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:rgba(7,9,13,.98);border-top:1px solid rgba(255,255,255,.07);display:flex;z-index:100;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 14px;border:none;background:transparent;cursor:pointer;}
+.bni-i{font-size:19px;margin-bottom:3px;}
+.bni-l{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);}
+.bni.active .bni-l{color:var(--gold);}
+.page{display:none;padding:14px;}
+.page.active{display:block;}
+.stripe{height:2px;background:linear-gradient(90deg,transparent,var(--gold) 35%,var(--blue) 70%,transparent);margin-bottom:16px;}
+.ptitle{font-family:'Bebas Neue';font-size:28px;letter-spacing:.06em;}
+.ptitle span{color:var(--gold);}
+.psub{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--dim2);margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.sc{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:13px;padding:13px 14px;}
+.sc-l{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.sc-v{font-family:'Bebas Neue';font-size:27px;line-height:1;}
+.sc-s{font-size:10px;color:var(--dim2);margin-top:2px;}
+.c-b{color:var(--blue);}.c-g{color:var(--green);}.c-y{color:var(--gold);}.c-r{color:var(--red);}.c-p{color:var(--purple);}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:15px;padding:16px 18px;margin-bottom:11px;}
+.ct{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);margin-bottom:12px;}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.prow:last-child{border-bottom:none;}
+.prow .l{color:var(--dim2);}
+.alert{padding:10px 13px;border-radius:9px;font-size:13px;margin-bottom:10px;}
+.alert.warn{background:rgba(200,168,75,.07);border:1px solid rgba(200,168,75,.22);color:var(--gold);}
+.alert.danger{background:rgba(232,25,44,.07);border:1px solid rgba(232,25,44,.22);color:var(--red);}
+.alert.info{background:rgba(0,191,255,.06);border:1px solid rgba(0,191,255,.16);color:var(--blue);}
+.prog{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;position:relative;margin:8px 0 4px;}
+.prog-f{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--green));}
+.prog-m{position:absolute;top:0;bottom:0;left:33.3%;width:2px;background:rgba(255,255,255,.35);}
+.emp{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:14px;margin-bottom:9px;}
+.emp-top{display:flex;align-items:center;gap:11px;margin-bottom:6px;}
+.av{width:38px;height:38px;border-radius:50%;background:rgba(200,168,75,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:15px;flex-shrink:0;}
+.emp-n{font-size:14px;font-weight:600;}
+.emp-r{font-size:11px;color:var(--dim2);}
+.emp-u{margin-left:auto;text-align:right;}
+.emp-u b{font-family:'Bebas Neue';font-size:26px;font-weight:400;}
+.emp-u small{display:block;font-size:10px;color:var(--dim2);}
+.emp-t{font-size:12px;margin-top:2px;}
+.emp-x{display:flex;gap:14px;font-size:11px;color:var(--dim2);margin-top:6px;}
+.tag{font-family:'Rajdhani';font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:10px;border:1px solid;margin-left:6px;}
+.log{display:flex;gap:9px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:var(--dim);}
+.log:last-child{border-bottom:none;}
+.log i{margin-left:auto;font-style:normal;font-size:10px;color:var(--dim2);white-space:nowrap;}
+.invbox{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0;}
+.invbox div{background:var(--bg3);border-radius:9px;padding:9px 6px;text-align:center;}
+.invbox b{display:block;font-family:'Bebas Neue';font-size:22px;font-weight:400;}
+.invbox span{font-family:'Rajdhani';font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:500;align-items:flex-end;justify-content:center;}
+.mbg.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:20px 20px 0 0;padding:24px 18px 36px;width:100%;max-width:560px;position:relative;max-height:88vh;overflow-y:auto;}
+.mx{position:absolute;top:12px;right:14px;background:transparent;border:none;color:var(--dim2);font-size:19px;cursor:pointer;padding:6px;}
+.mt{font-family:'Bebas Neue';font-size:24px;letter-spacing:.05em;margin-bottom:2px;}
+.ms{font-size:12px;color:var(--dim2);margin-bottom:16px;}
+#toast{position:fixed;bottom:92px;right:14px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.ti{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 14px;font-size:13px;max-width:270px;}
+.ti.success{border-color:rgba(0,230,118,.3);color:var(--green);}
+.ti.error{border-color:rgba(232,25,44,.3);color:var(--red);}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="lbox">
+    <div class="llogo">ABASHA <span>CR</span></div>
+    <div class="lsub">Panel del Socio</div>
+    <div class="lcard">
+      <label class="flabel">Contraseña</label>
+      <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn gold full" onclick="doLogin()">Entrar</button>
+      <div class="lerr" id="lerr"></div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+<div class="topbar">
+  <div class="tlogo">ABASHA <span>SOCIO</span></div>
+  <div class="tr"><div class="sdot" id="sdot"></div><span class="slbl" id="slbl">...</span><button class="btn" style="padding:5px 10px;font-size:10px;" onclick="doLogout()">Salir</button></div>
+</div>
+
+<div id="p-resumen" class="page active">
+  <div class="stripe"></div>
+  <div class="ptitle">Resumen <span>General</span></div>
+  <div class="psub">Todo el negocio en una pantalla</div>
+  <div id="res-alerts"></div>
+  <div class="g2" id="res-metrics"></div>
+  <div class="card"><div class="ct">Producto vendido por el dueño</div><div id="res-valor"></div></div>
+  <div class="card"><div class="ct">Ranking de vendedores · esta semana</div><div id="res-rank"></div></div>
+</div>
+
+<div id="p-dueno" class="page">
+  <div class="stripe"></div>
+  <div class="ptitle">Ventas del <span>Dueño</span></div>
+  <div class="psub">Sus ventas personales y su equipo</div>
+  <div id="due-aviso"></div>
+  <div class="g2" id="due-metrics"></div>
+  <div class="card"><div class="ct">Equipo del dueño · esta semana</div><div id="due-equipo"></div></div>
+  <div class="card"><div class="ct">Últimas ventas personales</div><div id="due-ventas"></div></div>
+</div>
+
+<div id="p-equipo" class="page">
+  <div class="stripe"></div>
+  <div class="ptitle">Mi <span>Equipo</span></div>
+  <div class="psub">Tus vendedores · lo manejás vos</div>
+  <div class="row-btns">
+    <button class="btn gold" onclick="openM('m-aemp')">+ Vendedor</button>
+    <button class="btn blue" onclick="openEnt()">Entregar producto</button>
+    <button class="btn" onclick="cerrarSemana()">Cerrar semana</button>
+  </div>
+  <div id="eq-lista"></div>
+</div>
+
+<div id="p-inv" class="page">
+  <div class="stripe"></div>
+  <div class="ptitle">Inventario <span>Mayor</span></div>
+  <div class="psub">Lo que producís · lo que entregás</div>
+  <div class="row-btns">
+    <button class="btn green" onclick="openM('m-ing')">+ Ingreso de producto</button>
+    <button class="btn gold" onclick="openM('m-adue')">Entregar al dueño</button>
+  </div>
+  <div id="inv-cards"></div>
+  <div class="card"><div class="ct">Entregas al dueño</div><div id="inv-entregas"></div></div>
+  <div class="card"><div class="ct">Movimientos</div><div id="inv-log" style="max-height:260px;overflow-y:auto;"></div></div>
+</div>
+
+<nav class="bnav">
+  <button class="bni active" onclick="showP('resumen',this)"><div class="bni-i">📊</div><div class="bni-l">Resumen</div></button>
+  <button class="bni" onclick="showP('dueno',this)"><div class="bni-i">👤</div><div class="bni-l">Dueño</div></button>
+  <button class="bni" onclick="showP('equipo',this)"><div class="bni-i">👥</div><div class="bni-l">Mi equipo</div></button>
+  <button class="bni" onclick="showP('inv',this)"><div class="bni-i">📦</div><div class="bni-l">Inventario</div></button>
+</nav>
+</div>
+
+<div class="mbg" id="m-ing"><div class="modal"><button class="mx" onclick="closeM('m-ing')">✕</button>
+  <div class="mt">Ingreso de <span style="color:var(--green)">producto</span></div><div class="ms">Producto que se suma a tu inventario mayor</div>
+  <label class="flabel">Producto</label><select id="ing-prod"><option value="gel">Gel Desengrasador</option><option value="cera">Cera Smart Wax</option></select>
+  <label class="flabel">Unidades</label><input type="number" id="ing-qty" min="1" placeholder="Ej: 200">
+  <button class="btn green full" onclick="registrarIngreso()">Registrar ingreso</button></div></div>
+
+<div class="mbg" id="m-adue"><div class="modal"><button class="mx" onclick="closeM('m-adue')">✕</button>
+  <div class="mt">Entregar al <span style="color:var(--gold)">dueño</span></div><div class="ms">Se suma solo al inventario del dueño</div>
+  <label class="flabel">Producto</label><select id="adue-prod"><option value="gel">Gel Desengrasador</option><option value="cera">Cera Smart Wax</option></select>
+  <label class="flabel">Unidades</label><input type="number" id="adue-qty" min="1" placeholder="Ej: 100">
+  <button class="btn gold full" onclick="entregarDueno()">Confirmar entrega</button></div></div>
+
+<div class="mbg" id="m-aemp"><div class="modal"><button class="mx" onclick="closeM('m-aemp')">✕</button>
+  <div class="mt">Nuevo <span style="color:var(--gold)">vendedor</span></div><div class="ms">Va a tu equipo, separado del equipo del dueño</div>
+  <label class="flabel">Nombre</label><input type="text" id="aemp-name" placeholder="Nombre...">
+  <button class="btn gold full" onclick="addEmp()">Agregar</button></div></div>
+
+<div class="mbg" id="m-ent"><div class="modal"><button class="mx" onclick="closeM('m-ent')">✕</button>
+  <div class="mt">Entregar <span style="color:var(--blue)">producto</span></div><div class="ms">Sale de tu inventario mayor</div>
+  <label class="flabel">Vendedor</label><select id="ent-emp"></select>
+  <label class="flabel">Producto</label><select id="ent-prod"><option value="gel">Gel Desengrasador</option><option value="cera">Cera Smart Wax</option></select>
+  <label class="flabel">Unidades</label><input type="number" id="ent-qty" min="1" placeholder="Ej: 25">
+  <button class="btn blue full" onclick="entregarEmp()">Confirmar entrega</button></div></div>
+
+<div id="toast"></div>
+
+<script>
+const SBU='https://jabyzohcabmabgvctarq.supabase.co',SBK='sb_publishable_OnSKgU_VU8leCmpz9NWWQg_TPJW882u';
+const SBH={'apikey':SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json'};
+const PASS='socio2024';
+const PRODS={gel:'Gel Desengrasador',cera:'Cera Smart Wax'};
+const COSTO=3500,COSTO_WEB=4000;
+let M=null,SOC=null;
+
+function defSoc(){return {"inv": {"gel": {"ingreso": 0, "aDueno": 0, "aEmp": 0}, "cera": {"ingreso": 0, "aDueno": 0, "aEmp": 0}}, "empleados": [{"id": 2000001, "name": "Pablo", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}, {"id": 2000002, "name": "Moisés", "role": "Vendedor", "entregado": 0, "vendidoSemana": 0, "devuelto": 0, "recordSemana": 0, "histDiario": [], "active": true}], "entregasDueno": [], "log": [], "semanas": []};}
+function fixSoc(){
+  if(!SOC)SOC=defSoc();
+  const d=defSoc();
+  if(!SOC.inv)SOC.inv=d.inv;
+  ['gel','cera'].forEach(function(p){if(!SOC.inv[p])SOC.inv[p]={ingreso:0,aDueno:0,aEmp:0};});
+  if(!SOC.empleados)SOC.empleados=d.empleados;
+  if(!SOC.entregasDueno)SOC.entregasDueno=[];
+  if(!SOC.log)SOC.log=[];
+  if(!SOC.semanas)SOC.semanas=[];
+}
+
+/* nube: false = error de conexión, null = la fila no existe */
+async function getRow(id){
+  try{const r=await fetch(SBU+'/rest/v1/sistema?id=eq.'+id,{headers:SBH});
+    if(!r.ok)return false;const d=await r.json();
+    if(d&&d.length&&d[0].data&&Object.keys(d[0].data).length)return d[0].data;return null;
+  }catch(e){return false;}
+}
+function setSS(st){
+  const d=document.getElementById('sdot'),l=document.getElementById('slbl');
+  const c={ok:'var(--green)',syncing:'var(--gold)',offline:'var(--red)'};
+  const t={ok:'Sincronizado',syncing:'Guardando...',offline:'Sin conexión'};
+  if(d)d.style.background=c[st];if(l)l.textContent=t[st];
+}
+async function putSoc(){
+  setSS('syncing');
+  try{
+    const r=await fetch(SBU+'/rest/v1/sistema',{method:'POST',headers:Object.assign({},SBH,{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{id:'socio',data:SOC,updated_at:new Date().toISOString()}])});
+    setSS(r.ok?'ok':'offline');return r.ok;
+  }catch(e){setSS('offline');return false;}
+}
+/* lee lo último de la nube, aplica el cambio y guarda (evita pisar datos de Pablo y Moisés) */
+async function mutar(fn,okMsg){
+  const last=await getRow('socio');
+  if(last===false){toast('Sin conexión. No se guardó.','error');return false;}
+  if(last)SOC=last;fixSoc();
+  if(fn(SOC)===false)return false;
+  const ok=await putSoc();
+  renderAll();
+  if(ok){if(okMsg)toast(okMsg);}else toast('No se pudo guardar.','error');
+  return ok;
+}
+
+/* utilidades */
+function ts(){return new Date().toLocaleString('es-CR',{hour12:false});}
+function fmt(n){return '\u20a1'+Math.round(n).toLocaleString('es-CR');}
+function gv(id){return document.getElementById(id).value;}
+function toast(m,t){const d=document.createElement('div');d.className='ti '+(t||'success');d.textContent=m;document.getElementById('toast').appendChild(d);setTimeout(function(){d.remove();},3500);}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function showP(id,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.bni').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('p-'+id).classList.add('active');if(btn)btn.classList.add('active');
+}
+function disp(p){const i=SOC.inv[p];return (i.ingreso||0)-(i.aDueno||0)-(i.aEmp||0);}
+function addLog(msg,c){SOC.log.unshift({msg:msg,c:c||'blue',time:ts()});if(SOC.log.length>200)SOC.log.length=200;}
+function teamD(){return ((M&&M.empleados)||[]).filter(function(e){return e.name!=='Osman';});}
+function vp(){return (M&&M.vp)||[];}
+function sumU(list){return list.reduce(function(a,e){return a+(e.vendidoSemana||0);},0);}
+
+function metaInfo(v){
+  if(v>=180)return {txt:'💎 Diamond logrado',col:'var(--green)',pct:100};
+  if(v>=60)return {txt:'🎯 Meta 60 lograda · faltan '+(180-v)+' para Diamond',col:'var(--gold)',pct:Math.round(v/180*100)};
+  return {txt:'Faltan '+(60-v)+' para la meta de 60',col:'var(--blue)',pct:Math.round(v/180*100)};
+}
+function empCard(e,tag){
+  const v=e.vendidoSemana||0,m=metaInfo(v);
+  const ini=e.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
+  return '<div class="emp"><div class="emp-top"><div class="av">'+ini+'</div>'+
+    '<div><div class="emp-n">'+e.name+(tag||'')+'</div><div class="emp-r">'+(e.role||'Vendedor')+'</div></div>'+
+    '<div class="emp-u"><b class="c-g">'+v+'</b><small>unidades</small></div></div>'+
+    '<div class="prog"><div class="prog-f" style="width:'+m.pct+'%"></div><div class="prog-m"></div></div>'+
+    '<div class="emp-t" style="color:'+m.col+'">'+m.txt+'</div>'+
+    '<div class="emp-x"><span>Entregado: '+(e.entregado||0)+'</span><span>Devuelto: '+(e.devuelto||0)+'</span></div></div>';
+}
+
+/* ---------- RENDER ---------- */
+function renderResumen(){
+  let al='';
+  ['gel','cera'].forEach(function(p){const d=disp(p);
+    if(d<=0)al+='<div class="alert danger">Sin stock en inventario mayor: '+PRODS[p]+'</div>';
+    else if(d<30)al+='<div class="alert warn">Poco stock en inventario mayor: '+PRODS[p]+' ('+d+')</div>';});
+  if(M===null)al+='<div class="alert info">No se pudo leer los datos del dueño. Revisá la conexión.</div>';
+  document.getElementById('res-alerts').innerHTML=al;
+  const eq=sumU(teamD()),mio=sumU(SOC.empleados);
+  const pers=vp().reduce(function(a,v){return a+(v.qty||0);},0);
+  document.getElementById('res-metrics').innerHTML=
+    '<div class="sc"><div class="sc-l">Equipo del dueño</div><div class="sc-v c-g">'+eq+'</div><div class="sc-s">unidades esta semana</div></div>'+
+    '<div class="sc"><div class="sc-l">Mi equipo</div><div class="sc-v c-y">'+mio+'</div><div class="sc-s">unidades esta semana</div></div>'+
+    '<div class="sc"><div class="sc-l">Ventas del dueño</div><div class="sc-v c-b">'+pers+'</div><div class="sc-s">unidades personales (acum.)</div></div>'+
+    '<div class="sc"><div class="sc-l">Inventario mayor</div><div class="sc-v c-p">'+(disp('gel')+disp('cera'))+'</div><div class="sc-s">unidades disponibles</div></div>';
+  const valP=vp().reduce(function(a,v){return a+(v.qty||0)*(v.canal==='internet'?COSTO_WEB:COSTO);},0);
+  document.getElementById('res-valor').innerHTML=
+    '<div class="prow"><span class="l">Equipo del dueño (semana) · '+eq+' uds × '+fmt(COSTO)+'</span><span class="c-y">'+fmt(eq*COSTO)+'</span></div>'+
+    '<div class="prow"><span class="l">Ventas personales (acum.) · '+pers+' uds</span><span class="c-y">'+fmt(valP)+'</span></div>'+
+    '<div class="prow"><span class="l"><b>Total</b></span><span class="c-g"><b>'+fmt(eq*COSTO+valP)+'</b></span></div>'+
+    '<div style="font-size:11px;color:var(--dim2);margin-top:8px;">Cálculo a '+fmt(COSTO)+' por unidad y '+fmt(COSTO_WEB)+' en ventas por internet.</div>';
+  const all=teamD().map(function(e){return {n:e.name,u:e.vendidoSemana||0,t:'dueño'};}).concat(SOC.empleados.map(function(e){return {n:e.name,u:e.vendidoSemana||0,t:'mío'};}));
+  all.sort(function(a,b){return b.u-a.u;});
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('res-rank').innerHTML=all.length?all.map(function(x,i){
+    return '<div class="prow"><span>'+(medals[i]||'#'+(i+1))+' '+x.n+'<span class="tag" style="color:'+(x.t==='mío'?'var(--gold)':'var(--blue)')+';border-color:currentColor">'+(x.t==='mío'?'mi equipo':'equipo del dueño')+'</span></span><span class="c-g"><b>'+x.u+' uds</b></span></div>';
+  }).join(''):'<div style="color:var(--dim2);font-size:13px;">Sin datos aún.</div>';
+}
+
+function renderDueno(){
+  document.getElementById('due-aviso').innerHTML=(M===null)?'<div class="alert info">No se pudo leer los datos del dueño. Revisá la conexión.</div>':'';
+  const list=vp(),pers=list.reduce(function(a,v){return a+(v.qty||0);},0);
+  const valP=list.reduce(function(a,v){return a+(v.qty||0)*(v.canal==='internet'?COSTO_WEB:COSTO);},0);
+  document.getElementById('due-metrics').innerHTML=
+    '<div class="sc"><div class="sc-l">Unidades personales</div><div class="sc-v c-b">'+pers+'</div><div class="sc-s">acumulado</div></div>'+
+    '<div class="sc"><div class="sc-l">Valor del producto</div><div class="sc-v c-y">'+fmt(valP)+'</div><div class="sc-s">a tu precio</div></div>';
+  const t=teamD();
+  document.getElementById('due-equipo').innerHTML=t.length?t.map(function(e){return empCard(e);}).join(''):'<div style="color:var(--dim2);font-size:13px;">Sin vendedores.</div>';
+  document.getElementById('due-ventas').innerHTML=list.length?list.slice(0,15).map(function(v){
+    const c=(v.canal==='internet'?COSTO_WEB:COSTO)*(v.qty||0);
+    return '<div class="prow"><span class="l">'+v.fecha+' · '+v.canalLabel+' × '+v.qty+'</span><span class="c-y">'+(v.qty||0)+' uds · '+fmt(c)+'</span></div>';
+  }).join(''):'<div style="color:var(--dim2);font-size:13px;">Sin ventas personales registradas.</div>';
+}
+
+function renderEquipo(){
+  document.getElementById('eq-lista').innerHTML=SOC.empleados.length?SOC.empleados.map(function(e){return empCard(e);}).join(''):'<div style="color:var(--dim2);font-size:13px;">Sin vendedores. Agregá el primero.</div>';
+}
+
+function renderInv(){
+  document.getElementById('inv-cards').innerHTML=['gel','cera'].map(function(p){
+    const i=SOC.inv[p],d=disp(p);
+    return '<div class="card"><div class="ct">'+PRODS[p]+'</div><div class="invbox">'+
+      '<div><b class="c-g">'+(i.ingreso||0)+'</b><span>Ingreso</span></div>'+
+      '<div><b class="c-y">'+(i.aDueno||0)+'</b><span>Al dueño</span></div>'+
+      '<div><b class="c-b">'+(i.aEmp||0)+'</b><span>A mis vend.</span></div>'+
+      '<div><b class="'+(d<=0?'c-r':'c-p')+'">'+d+'</b><span>Disponible</span></div></div></div>';
+  }).join('');
+  document.getElementById('inv-entregas').innerHTML=SOC.entregasDueno.length?SOC.entregasDueno.slice(0,15).map(function(x){
+    return '<div class="prow"><span class="l">'+x.fecha+'</span><span class="c-y">'+x.qty+' × '+PRODS[x.prod]+'</span></div>';
+  }).join(''):'<div style="color:var(--dim2);font-size:13px;">Aún no le entregaste producto al dueño.</div>';
+  document.getElementById('inv-log').innerHTML=SOC.log.length?SOC.log.slice(0,30).map(function(l){
+    return '<div class="log"><span>'+l.msg+'</span><i>'+l.time+'</i></div>';}).join(''):'<div style="color:var(--dim2);font-size:12px;">Sin movimientos.</div>';
+}
+function renderAll(){if(!SOC)return;renderResumen();renderDueno();renderEquipo();renderInv();}
+
+/* ---------- ACCIONES ---------- */
+async function registrarIngreso(){
+  const p=gv('ing-prod'),q=parseInt(gv('ing-qty'))||0;
+  if(q<=0){toast('Cantidad inválida','error');return;}
+  const ok=await mutar(function(D){D.inv[p].ingreso=(D.inv[p].ingreso||0)+q;addLog('+'+q+' '+PRODS[p]+' al inventario mayor','green');},'Ingreso registrado: +'+q);
+  if(ok){closeM('m-ing');document.getElementById('ing-qty').value='';}
+}
+async function entregarDueno(){
+  const p=gv('adue-prod'),q=parseInt(gv('adue-qty'))||0;
+  if(q<=0){toast('Cantidad inválida','error');return;}
+  const ok=await mutar(function(D){
+    if(q>disp(p)){toast('Solo tenés '+disp(p)+' disponibles de '+PRODS[p],'error');return false;}
+    D.inv[p].aDueno=(D.inv[p].aDueno||0)+q;
+    D.entregasDueno.unshift({fecha:ts(),prod:p,qty:q});
+    addLog('Entregaste '+q+' '+PRODS[p]+' al dueño','gold');
+  },'Entregadas '+q+' unidades al dueño');
+  if(ok){closeM('m-adue');document.getElementById('adue-qty').value='';}
+}
+function openEnt(){
+  document.getElementById('ent-emp').innerHTML=SOC.empleados.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
+  openM('m-ent');
+}
+async function entregarEmp(){
+  const id=parseInt(gv('ent-emp')),p=gv('ent-prod'),q=parseInt(gv('ent-qty'))||0;
+  if(q<=0){toast('Cantidad inválida','error');return;}
+  const ok=await mutar(function(D){
+    const e=D.empleados.find(function(x){return x.id===id;});
+    if(!e){toast('Vendedor no encontrado','error');return false;}
+    if(q>disp(p)){toast('Solo tenés '+disp(p)+' disponibles de '+PRODS[p],'error');return false;}
+    e.entregado=(e.entregado||0)+q;D.inv[p].aEmp=(D.inv[p].aEmp||0)+q;
+    if(!e.histDiario)e.histDiario=[];e.histDiario.push({fecha:ts(),prod:p,qty:q,tipo:'entrega'});
+    addLog('Entregaste '+q+' '+PRODS[p]+' a '+e.name,'blue');
+  },'Entregadas '+q+' unidades');
+  if(ok){closeM('m-ent');document.getElementById('ent-qty').value='';}
+}
+async function addEmp(){
+  const n=gv('aemp-name').trim();
+  if(!n){toast('Ingresá el nombre','error');return;}
+  const ok=await mutar(function(D){
+    D.empleados.push({id:Date.now(),name:n,role:'Vendedor',entregado:0,vendidoSemana:0,devuelto:0,recordSemana:0,histDiario:[],active:true});
+    addLog('Nuevo vendedor: '+n,'gold');
+  },n+' agregado');
+  if(ok){closeM('m-aemp');document.getElementById('aemp-name').value='';}
+}
+async function cerrarSemana(){
+  if(!confirm('¿Cerrar la semana de tu equipo? Se archivan las ventas y los contadores vuelven a cero.'))return;
+  await mutar(function(D){
+    D.semanas.push({fecha:ts(),empleados:D.empleados.map(function(e){return {name:e.name,vendido:e.vendidoSemana||0};})});
+    D.empleados.forEach(function(e){e.vendidoSemana=0;e.devuelto=0;e.histDiario=[];});
+    addLog('Semana cerrada y archivada','gold');
+  },'Semana cerrada');
+}
+
+/* ---------- ACCESO E INICIO ---------- */
+function doLogin(){
+  if(gv('lp')!==PASS){document.getElementById('lerr').textContent='Contraseña incorrecta.';return;}
+  localStorage.setItem('ab_socio_sess','1');enter();
+}
+function doLogout(){localStorage.removeItem('ab_socio_sess');location.reload();}
+function enter(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';initApp();}
+async function initApp(){
+  setSS('syncing');
+  const m=await getRow('main'),s=await getRow('socio');
+  M=(m===false)?null:m;
+  if(s===false){SOC=defSoc();fixSoc();setSS('offline');}
+  else if(s===null){SOC=defSoc();fixSoc();await putSoc();}
+  else{SOC=s;fixSoc();setSS(m===false?'offline':'ok');}
+  renderAll();
+  setInterval(async function(){
+    const m2=await getRow('main'),s2=await getRow('socio');let ch=false;
+    if(m2&&JSON.stringify(m2)!==JSON.stringify(M)){M=m2;ch=true;}
+    if(s2&&JSON.stringify(s2)!==JSON.stringify(SOC)){SOC=s2;fixSoc();ch=true;}
+    setSS((m2===false||s2===false)?'offline':'ok');
+    if(ch)renderAll();
+  },20000);
+}
+if(localStorage.getItem('ab_socio_sess')==='1')enter();
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+</script>
+</body>
+</html>
